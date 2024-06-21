@@ -16,10 +16,11 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 //set openai class configuring the api key in the class 
-const openai = new OpenAI({
+const openaiApiConfig = {
     apiKey: process.env.OPENAI_API_KEY
-});
-
+}
+// exports the class to be used externally
+module.exports = new OpenAI(openaiApiConfig);
 //basic route test
 app.get("/", async (req, res) => {
 
@@ -32,29 +33,7 @@ app.get("/", async (req, res) => {
 
 });
 
-//Basic post test with chat gpt
-app.post("/chat-test", async (req, res) => {
-    try {
-        const response = await openai.chat.completions.create({
-            messages: [{ role: "system", content: "What day is it?" }],
-            model: "gpt-3.5-turbo",
-        });
-        console.log(response)
-        console.log(response.choices[0].message)
-        return res.status(200).json({
-            success: true,
-            data:response.choices[0].message
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(400).json({
-            success: false,
-            error: error.response ? error.response.data : "there was an issue on the server"
-        })
-    }
-});
-
-
+//-------------------------------------------------------
 //server port 
 //todo add .env Port variable
 const port = process.env.PORT || 3000;
@@ -62,18 +41,21 @@ const port = process.env.PORT || 3000;
 //routes sectiong to differentiate api calls
 const promptsRouter =require("./routes/prompts.js");
 
-
+//-------------------------------------------------------
 /*  route use
     necessary to use the operations in the specific routes
 */ 
 app.use("/prompts", promptsRouter)
 
+
+//-------------------------------------------------------
 /*basic logger that shows the url being called on the server*/
 function logger(req, res, next) {
     console.log(req.originalUrl);
     next();
 }
 
+//-------------------------------------------------------
 // server listening start
 app.listen(port, () => {
     // console.log(openai)
