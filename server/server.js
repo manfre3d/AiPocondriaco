@@ -21,7 +21,7 @@ const openaiApiConfig = {
 }
 // exports the class to be used externally
 module.exports = new OpenAI(openaiApiConfig);
-//basic route test
+//basic route
 app.get("/", async (req, res) => {
 
     try {
@@ -41,12 +41,23 @@ const port = process.env.PORT || 3000;
 //routes sectiong to differentiate api calls
 const promptsRouter =require("./routes/prompts.js");
 
+const utentiRouter =require("./routes/utenti.js");
+
+const patologieRouter =require("./routes/patologie.js");
+
+const attivitaFisiche =require("./routes/attivitaFisiche.js");
+
 //-------------------------------------------------------
 /*  route use
     necessary to use the operations in the specific routes
 */ 
 app.use("/prompts", promptsRouter)
 
+app.use("/utenti", utentiRouter)
+
+app.use("/patologie", patologieRouter)
+
+app.use("/attivitaFisiche", attivitaFisiche)
 
 //-------------------------------------------------------
 /*basic logger that shows the url being called on the server*/

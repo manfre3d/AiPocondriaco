@@ -28,7 +28,7 @@ async function addUtente(nome, cognome, email, password) {
 
 async function fetchUtenti() {
     //await connect();
-    try {
+    try { 
         const utenti = await utentiModel.getUtenti();
         return utenti;
     } catch (err) {
