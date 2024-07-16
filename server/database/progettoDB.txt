@@ -1,0 +1,19 @@
+my_project/
+│
+├── config/
+│   └── db.js         # File di configurazione del database
+│
+├── models/
+│   └── patologie.js  # Modello per le operazioni su Patologie
+│   └── ipocondriaci.js   # Modello per le operazioni su Pazienti
+│   └── attivitaFisiche.js  # Modello per le operazioni su AttivitàFisiche
+│
+├── services/
+│   └── patologieService.js  # Servizi per la gestione di Patologie
+│   └── ipocondriaciService.js   # Servizi per la gestione degli Ipocondriaci
+│   └── attivitaFisicheService.js  # Servizi per la gestione di AttivitàFisiche
+│
+├── scripts/
+│   └── insertData.js  # Script di inserimento dati iniziali
+│
+└── index.js          # Entry point dell'applicazione
