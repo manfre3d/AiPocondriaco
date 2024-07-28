@@ -1,0 +1,228 @@
+.outer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90vw; /* Set the width to 90% of the viewport width */
+  height: 90vh; /* Set the height to 90% of the viewport height */
+  background-color: #f0f2f5;
+}
+
+.container {
+  background-color: #0bd8d3; /* Changed background color */
+  border-radius: 15px;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.inner-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px; /* Added padding to inner container */
+}
+
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden; /* Ensure content doesn't overflow */
+  background-color: #ffffff; /* Background color for main content */
+  border-radius: 15px;
+  padding: 20px; /* Added padding */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.header-left,
+.header-right {
+  width: 50%;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.health-bar-wrapper {
+  display: flex;
+  align-items: center;
+  width: 80%; /* Ensure the health bar occupies 80% of its container */
+}
+
+.health-bar {
+  width: 100%;
+  height: 30px; /* Increased height */
+  position: relative;
+  margin-left: 10px;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.health-bar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, #ff0000, #ff9900, #ffff00, #00ff00);
+  filter: blur(8px); /* Apply blur effect */
+  z-index: 1; /* Ensure it is behind the inner bar */
+}
+
+.health-bar-inner {
+  height: 100%;
+  background: linear-gradient(to right, #ff0000, #ff9900, #ffff00, #00ff00);
+  position: absolute;
+  left: 0;
+  z-index: 2; /* Ensure it is above the blurry background */
+  border: 1px solid black;
+  border-radius: 15px;
+}
+
+.health-icon {
+  position: relative;
+  margin-right: 10px;
+}
+
+.health-icon img {
+  width: 40px; /* Increased size */
+  height: 40px; /* Increased size */
+}
+
+.health-text {
+  font-size: 16px; /* Slightly larger font */
+  color: #ffffff; /* Changed to white for better contrast */
+  margin-left: 10px;
+  text-shadow: 1px 1px 2px #000000;
+}
+
+.date {
+  font-size: 14px;
+  color: #ffffff; /* Changed to white for better contrast */
+  text-align: right;
+}
+
+.content-area {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  padding-bottom: 20px; /* Changed margin to padding-bottom */
+}
+
+.chat-box {
+  background-color: #ffffff;
+  border-radius: 15px;
+  padding: 20px;
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-right: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 10px;
+  max-width: 70%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1.4;
+  border-left: 3px solid #0bd8d3; /* Subtle accent on the left border */
+}
+
+.system-message {
+  background-color: #e3f2fd;
+  align-self: flex-start;
+  color: #333;
+}
+
+.user-message {
+  background-color: #d1e7dd;
+  align-self: flex-end;
+  color: #333;
+}
+
+.sidebar {
+  background-color: #ffffff;
+  width: 35%; /* Set width to 35% */
+  border-radius: 15px;
+  padding: 20px;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.user-image img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid #0bd8d3; /* Subtle border */
+}
+
+.user-info {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  background-color: #ffffff; /* Background color for input box */
+  border-radius: 15px;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.input-box textarea {
+  width: 100%;
+  padding: 15px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  resize: none; /* Prevent the user from resizing manually */
+  overflow: hidden; /* Hide scrollbars */
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.input-box button {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 15px;
+  background-color: #007bff;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 10px;
+  background-color: #0bd8d3; /* Subtle color usage */
+}
+
+.input-box button:hover {
+  background-color: #0aa6a2; /* Darken the hover state */
+}

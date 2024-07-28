@@ -1,1 +1,59 @@
-<p>homepage works!</p>
+<div class="outer-container">
+  <div class="container">
+    <div class="inner-container">
+      <div class="main-content">
+        <div class="header">
+          <div class="header-left">
+            <div class="health-bar-wrapper">
+              <div class="health-icon">
+                <img
+                  src="../../../assets/images/pixel-heart-heart.png"
+                  alt="Health Icon"
+                />
+              </div>
+              <div class="health-bar">
+                <div class="health-bar-inner" [style.width.%]="health"></div>
+              </div>
+              <div class="health-text">{{ health }}%</div>
+            </div>
+          </div>
+          <div class="header-right">
+            <div class="date">19 Giugno 2024</div>
+          </div>
+        </div>
+        <div class="content-area">
+          <div class="chat-box">
+            <div
+              *ngFor="let message of messages"
+              class="message"
+              [ngClass]="{
+                'system-message': message.type === 'system',
+                'user-message': message.type === 'user'
+              }"
+            >
+              {{ message.text }}
+            </div>
+          </div>
+          <div class="sidebar">
+            <div class="user-image">
+              <img src="https://via.placeholder.com/100" alt="User Image" />
+            </div>
+            <div class="user-info">
+              <p><strong>Username:</strong> JohnDoe</p>
+              <p><strong>Email:</strong> johndoe&#64;example.com</p>
+              <p><strong>Other Info:</strong> Additional details here.</p>
+            </div>
+          </div>
+        </div>
+        <div class="input-box">
+          <textarea
+            placeholder="Type your message here..."
+            [(ngModel)]="newMessage"
+            (input)="adjustTextareaHeight($event)"
+          ></textarea>
+          <button (click)="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
