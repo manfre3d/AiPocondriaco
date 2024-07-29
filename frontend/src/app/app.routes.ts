@@ -7,6 +7,7 @@ export const routes: Routes = [
     { "path": "", "component": LoginComponent },
     { "path": "login", "component": LoginComponent },
     { "path": "homepage", "component": HomepageComponent },
-    { 'path': 'error', component: ErrorPageComponent }
+    { path: 'error', component: ErrorPageComponent },
+    { path: '**', redirectTo: '/error' }
   ];
 
