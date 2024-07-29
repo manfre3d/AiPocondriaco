@@ -1,0 +1,11 @@
+.container {
+  background-color: #0bd8d3; /* Changed background color */
+  border-radius: 15px;
+  display: flex;
+  width: 85vw; /* Set the width to 85% of the viewport width */
+  height: 85vh; /* Set the height to 85% of the viewport height */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+}
