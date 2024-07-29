@@ -32,6 +32,7 @@ export class HomepageComponent {
     textarea.style.height = `${textarea.scrollHeight}px`;
   }
   sendMessage() {
+    console.log("Send form conversation")
     if (this.newMessage.trim() !== '') {
       this.messages.push({ text: `User: ${this.newMessage}`, type: 'user' });
       this.newMessage = '';
@@ -40,11 +41,8 @@ export class HomepageComponent {
 
     this._webService.postConversazioneApi().subscribe({
         next: (response) => {
-
-        },
-        error: (err) => {
-
-      }
+          console.log(response)
+        }
     });
   }
 }

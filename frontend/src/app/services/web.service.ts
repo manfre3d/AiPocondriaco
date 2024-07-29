@@ -17,10 +17,13 @@ export class WebService {
   }
 
   postConversazioneApi(): Observable<any> {
-    let request = {};
+    let request = {
+      "messagePrompt":"what are you?"
+    };
 
-    return this.http.post<any>(this.getRadix() + 'prompt', request).pipe(
+    return this.http.post<any>(this.getRadix() + 'prompts/test', request).pipe(
       map((response) => {
+        console.log(response);
         return response.payload;
       }),
       catchError((err) => {
