@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors');
 require("dotenv").config();
 const { OpenAI } = require("openai");
 const app = express()
@@ -7,6 +8,7 @@ const app = express()
 
 app.use(logger);
 app.use(express.json());
+app.use(cors());
 
 
 //check if a .env file is properly configured and a apikey is correctly configured
