@@ -4,7 +4,7 @@ const openai =require("../server.js");
 
 let message = {
     "role":"user", 
-    "content": "This is the beginning of your chat with AI. [To exit, send \"###\".]\n\nYou:"
+    "content": "Questo è l'inizio della conversazione. Tu sei Ai pocondriaco un assistente virtuale per la salute è il benessere della persona"
 };
 
 let conversation = [];
@@ -19,7 +19,7 @@ router.get("/",(req,res)=>{
 })
 
 //Basic post test with chat gpt
-router.post("/test", async (req, res) => {
+router.post("/conversation", async (req, res) => {
     try {
         console.log(req.body);
         conversation.push(({
@@ -32,7 +32,7 @@ router.post("/test", async (req, res) => {
             messages: conversation,
             model: "gpt-3.5-turbo",
         });
-        message["content"] = `Assistant: ${response.choices[0].message.content} \nYou:`
+        message["content"] = `${response.choices[0].message.content} \nYou:`
 
         console.log("RESPONSE")
         console.log(response)
@@ -51,6 +51,9 @@ router.post("/test", async (req, res) => {
         })
     }
 });
-
+router.get("/conversation", async (req, res) => {
+    console.log(conversation)
+    res.status(200).json({ conversation: conversation});
+})
 
 module.exports = router;

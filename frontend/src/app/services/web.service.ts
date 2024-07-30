@@ -16,15 +16,27 @@ export class WebService {
     }
   }
 
-  postConversazioneApi(): Observable<any> {
+  postConversazioneApi(message: string): Observable<any> {
     let request = {
-      "messagePrompt":"what are you?"
+      "messagePrompt":message
     };
 
-    return this.http.post<any>(this.getRadix() + 'prompts/test', request).pipe(
+    return this.http.post<any>(this.getRadix() + 'prompts/conversation', request).pipe(
       map((response) => {
         console.log(response);
-        return response.payload;
+        return response;
+      }),
+      catchError((err) => {
+        throw err;
+      })
+    );
+  }
+  getConversazioneApi(): Observable<any> {
+
+    return this.http.get<any>(this.getRadix() + 'prompts/conversation').pipe(
+      map((response) => {
+        console.log(response);
+        return response;
       }),
       catchError((err) => {
         throw err;
