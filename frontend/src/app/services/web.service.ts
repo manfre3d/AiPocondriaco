@@ -43,4 +43,16 @@ export class WebService {
       })
     );
   }
+  getHealthScoreApi(): Observable<any> {
+
+    return this.http.get<any>(this.getRadix() + 'prompts/healthScore').pipe(
+      map((response) => {
+        console.log(response);
+        return response;
+      }),
+      catchError((err) => {
+        throw err;
+      })
+    );
+  }
 }
