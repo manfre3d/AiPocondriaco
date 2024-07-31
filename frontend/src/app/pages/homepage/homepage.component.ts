@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { WebService } from '../../services/web.service';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-homepage',
@@ -21,7 +20,7 @@ export class HomepageComponent {
     // { text: 'User: Another message to show how this looks.', type: 'user' }
   ];
   newMessage: string = '';
-  health: number = 80; // Example health value, you can dynamically update this
+  healthScore: number = 100; // Example health value, you can dynamically update this
 
 
   constructor(private _webService: WebService ){ }
@@ -50,6 +49,15 @@ export class HomepageComponent {
               console.log(`lunghezza conversazione ${maxLengthConversation}`);
               console.log(response?.conversation[maxLengthConversation]);
               this.messages.push({ text: `System: ${messaggioAssistente}`, type: 'system' });
+              this._webService.getHealthScoreApi().subscribe({
+                next:(response)=>{
+                  
+                  console.log("health score");
+                  console.log(response);
+                  this.healthScore = response.data.healthScore;
+                }
+               
+              })
               
             }
           })
