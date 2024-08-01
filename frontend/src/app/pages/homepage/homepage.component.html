@@ -39,9 +39,9 @@
               <img src="https://via.placeholder.com/100" alt="User Image" />
             </div>
             <div class="user-info">
-              <p><strong>Username:</strong> JohnDoe</p>
-              <p><strong>Email:</strong> johndoe&#64;example.com</p>
-              <p><strong>Other Info:</strong> Additional details here.</p>
+              <p><strong>Informazioni:</strong> info utili dell'utente.</p> 
+              <p *ngFor="let key of userKeys; index as i"><strong>
+                {{key}}:</strong> {{userValues[i]}}</p>
             </div>
           </div>
         </div>

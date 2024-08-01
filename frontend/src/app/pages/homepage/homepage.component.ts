@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { WebService } from '../../services/web.service';
 
@@ -13,7 +13,7 @@ import { WebService } from '../../services/web.service';
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.scss']
 })
-export class HomepageComponent {
+export class HomepageComponent implements OnInit{
 
   messages: { text: string, type: string }[] = [
     { text: 'Ciao sono AI Pocondrio, l\'assistente virtuale per la salute e il benessere, come posso esserti utile oggi?', type: 'system' },
@@ -21,14 +21,26 @@ export class HomepageComponent {
   ];
   newMessage: string = '';
   healthScore: number = 100; // Example health value, you can dynamically update this
-
-
+  userInfos : any= {};
+  userKeys : any = []
+  userValues : any = []
+  
   constructor(private _webService: WebService ){ }
-
+  ngOnInit(): void {
+    console.log(Object.keys(this.userInfos));
+    this.userKeys = Object.keys(this.userInfos);
+    this.userValues = Object.values(this.userInfos);
+  }
+  
   adjustTextareaHeight(event: Event) {
     const textarea = event.target as HTMLTextAreaElement;
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight}px`;
+  }
+  processUserInfo(userInfoCalculated: any){
+    this.userInfos = userInfoCalculated;
+    this.userKeys = Object.keys(userInfoCalculated);
+    this.userValues = Object.values(userInfoCalculated);
   }
   sendMessage() {
     console.log("Send form conversation")
@@ -55,6 +67,16 @@ export class HomepageComponent {
                   console.log("health score");
                   console.log(response);
                   this.healthScore = response.data.healthScore;
+                  this._webService.getUserInfo().subscribe({
+                    next:(response)=>{
+                      
+                      console.log("user info obj");
+                      console.log(response);
+                      this.processUserInfo(response?.data);
+                      
+                    }
+                   
+                  })
                 }
                
               })

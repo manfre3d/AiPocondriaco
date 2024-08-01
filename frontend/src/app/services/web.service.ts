@@ -55,4 +55,16 @@ export class WebService {
       })
     );
   }
+  getUserInfo(): Observable<any> {
+
+    return this.http.get<any>(this.getRadix() + 'prompts/userInfo').pipe(
+      map((response) => {
+        console.log(response);
+        return response;
+      }),
+      catchError((err) => {
+        throw err;
+      })
+    );
+  }
 }
