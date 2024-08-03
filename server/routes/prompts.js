@@ -102,11 +102,17 @@ router.get("/userInfo", async (req, res) => {
             "role":"user",
             "content":`based on the current conversation give me an 
             object with structure key value with my health and body 
-            conditions. Make sure that the information have a significant 
+            conditions, name, surname and email if given. Do not include a value in the object
+            if it's not present in the conversation.
+            Make sure that the information have a significant 
             name in the key of the object and a short concise value in the 
             respective value associated to the key that you are going to provide. 
-            Everything has to be returned in a json object of a similar form like {Altezza :1,80m} 
-            translate everything in italian`
+            Everything has to be returned in a json object of a similar form like 
+            {Altezza: "1,80m",AttivitaFisica:"Non pratico sport da almeno 1 anno",BMI:23.15,Età:28,Nome:"Manfredi",Peso:"75kg",Sesso:"Maschio"} 
+            translate everything in italian and be sure that the object doesn't have
+            nested objects. Provide the object in string format on one line without line breaks.
+            Make sure that the keys of the object don't contain special character or eiphens and that the values
+            in the object don't contain','`
         }))
         console.log(tmpConversation);
         const response = await openai.chat.completions.create({
@@ -125,6 +131,51 @@ router.get("/userInfo", async (req, res) => {
         return res.status(200).json({
             success: true,
             data: userInfo
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({
+            success: false,
+            error: error.response ? error.response.data : "there was an issue on the server"
+        })
+    }
+})
+
+router.get("/generateImage", async (req, res) => {
+    try {
+
+        let tmpConversation = structuredClone(conversation)
+        tmpConversation.push(({
+            "role":"user",
+            "content":`based on the current conversation give me a paragraph with my physical description? 
+            and write it as if you are giving a description for a picture in a funny way.
+            Make sure that the description you give is similar to this one and fairly short
+            "A photo of Michelangelo's sculpture of David wearing headphones djing"`
+        }))
+        console.log(tmpConversation);
+        const response = await openai.chat.completions.create({
+            // messages: [{ role: "system", content: req.body.messagePrompt }],
+            messages: tmpConversation,
+            model: "gpt-3.5-turbo",
+        });
+
+        console.log("RESPONSE")
+        console.log(response)
+        console.log(response.choices[0].message)
+        let imageDescriptiong = response.choices[0].message.content;
+
+
+        const response2 = await openai.images.generate({
+            model: "dall-e-3",
+            prompt: imageDescriptiong?imageDescriptiong:"a white siamese cat",
+            n: 1,
+            size: "1024x1024",
+        });
+        let image_url = response2.data[0].url;
+        console.log(image_url);
+        return res.status(200).json({
+            success: true,
+            data: image_url
         })
     } catch (error) {
         console.log(error);
