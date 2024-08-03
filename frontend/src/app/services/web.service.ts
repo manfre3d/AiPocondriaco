@@ -67,4 +67,16 @@ export class WebService {
       })
     );
   }
+  getGeneratedUserImage(): Observable<any> {
+
+    return this.http.get<any>(this.getRadix() + 'prompts/generateImage').pipe(
+      map((response) => {
+        console.log(response);
+        return response;
+      }),
+      catchError((err) => {
+        throw err;
+      })
+    );
+  }
 }

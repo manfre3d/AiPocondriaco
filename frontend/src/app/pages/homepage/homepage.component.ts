@@ -24,6 +24,7 @@ export class HomepageComponent implements OnInit{
   userInfos : any= {};
   userKeys : any = []
   userValues : any = []
+  userImage : string = "https://via.placeholder.com/100";
   
   constructor(private _webService: WebService ){ }
   ngOnInit(): void {
@@ -73,7 +74,12 @@ export class HomepageComponent implements OnInit{
                       console.log("user info obj");
                       console.log(response);
                       this.processUserInfo(response?.data);
-                      
+                      this._webService.getGeneratedUserImage().subscribe({
+                        next:(response)=>{
+                          console.log(response);
+                          this.userImage = response.data;
+                        }
+                      })
                     }
                    
                   })
