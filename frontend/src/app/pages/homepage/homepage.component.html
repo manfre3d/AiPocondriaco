@@ -29,9 +29,9 @@
               [ngClass]="{
                 'system-message': message.type === 'system',
                 'user-message': message.type === 'user'
-              }"
+              }" [innerHTML]="message.text"
             >
-              {{ message.text }}
+              <!-- {{ message.text }} -->
             </div>
           </div>
           <div class="sidebar">

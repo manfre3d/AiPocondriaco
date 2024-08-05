@@ -4,7 +4,12 @@ const openai =require("../server.js");
 
 let message = {
     "role":"user", 
-    "content": "Questo è l'inizio della conversazione. Tu sei Ai pocondriaco un assistente virtuale per la salute è il benessere della persona"
+    "content": `Questo è l'inizio della conversazione. 
+    Tu sei Ai pocondriaco un assistente virtuale per la salute è il benessere della persona.
+    Ogni volta che ti chiedono chi sei dovrai rispondere che sei l'assistente dell'applicazione
+    AI Pocondria. Ogni rispostasta deve essere considerata tenendo a mente che verra inserita in
+    un componente html, di conseguenza se sono presenti dei grassetti dovranno essere rappresentati con
+    il tag <strong> e se sono presenti dei \n con <br>`
 };
 
 let conversation = [];
@@ -150,7 +155,7 @@ router.get("/generateImage", async (req, res) => {
             "content":`based on the current conversation give me a paragraph describing a picture
             with the user physical description and write it in a somewhat funny way.
             Make sure that the description you give is similar to this one and short
-            "A photo of Michelangelo's sculpture of David wearing headphones djing"`
+            "A photo of Giovanni's wearing headphones djing"`
         }))
         console.log(tmpConversation);
         const response = await openai.chat.completions.create({

@@ -24,7 +24,7 @@ export class HomepageComponent implements OnInit{
   userInfos : any= {};
   userKeys : any = []
   userValues : any = []
-  userImage : string = "https://via.placeholder.com/100";
+  userImage : string = "https://via.placeholder.com/1000";
   
   constructor(private _webService: WebService ){ }
   ngOnInit(): void {
@@ -60,7 +60,7 @@ export class HomepageComponent implements OnInit{
               let maxLengthConversation = response?.conversation.length-1;
               let messaggioAssistente = response?.conversation[maxLengthConversation].content;
               console.log(`lunghezza conversazione ${maxLengthConversation}`);
-              console.log(response?.conversation[maxLengthConversation]);
+              console.log(response?.conversation[maxLengthConversation].content);
               this.messages.push({ text: `System: ${messaggioAssistente}`, type: 'system' });
               this._webService.getHealthScoreApi().subscribe({
                 next:(response)=>{
