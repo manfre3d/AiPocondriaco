@@ -147,9 +147,9 @@ router.get("/generateImage", async (req, res) => {
         let tmpConversation = structuredClone(conversation)
         tmpConversation.push(({
             "role":"user",
-            "content":`based on the current conversation give me a paragraph with my physical description? 
-            and write it as if you are giving a description for a picture in a funny way.
-            Make sure that the description you give is similar to this one and fairly short
+            "content":`based on the current conversation give me a paragraph describing a picture
+            with the user physical description and write it in a somewhat funny way.
+            Make sure that the description you give is similar to this one and short
             "A photo of Michelangelo's sculpture of David wearing headphones djing"`
         }))
         console.log(tmpConversation);
@@ -158,12 +158,14 @@ router.get("/generateImage", async (req, res) => {
             messages: tmpConversation,
             model: "gpt-3.5-turbo",
         });
-
+        //Ciao, sono Manfredi ho 28 anni e sono un uomo di 1,80m e peso 75kg.
         console.log("RESPONSE")
         console.log(response)
         console.log(response.choices[0].message)
         let imageDescriptiong = response.choices[0].message.content;
-
+        //additional filters for image prompt specificity
+        imageDescriptiong = imageDescriptiong + `consider this:
+            photo, photograph, raw photo,analog photo, 4k, fujifilm photograph, don't display any writing`;
 
         const response2 = await openai.images.generate({
             model: "dall-e-3",
