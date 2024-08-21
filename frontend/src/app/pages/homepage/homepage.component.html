@@ -22,16 +22,20 @@
           </div>
         </div>
         <div class="content-area">
-          <div class="chat-box">
-            <div
-              *ngFor="let message of messages"
-              class="message"
-              [ngClass]="{
-                'system-message': message.type === 'system',
-                'user-message': message.type === 'user'
-              }" [innerHTML]="message.text"
-            >
-              <!-- {{ message.text }} -->
+          <div id="chat-box" class="chat-box">
+            <div class="inner-chat-container">
+
+              <textarea
+                *ngFor="let message of messages; index as i"
+                class="message"
+                [ngClass]="{
+                  'system-message': message.type === 'system',
+                  'user-message': message.type === 'user'
+                }" [innerHTML]="message.text"
+                id="{{message.type+i}}"
+              >
+                <!-- {{ message.text }} -->
+              </textarea>
             </div>
           </div>
           <div class="sidebar">
@@ -49,11 +53,12 @@
           <textarea
             placeholder="Type your message here..."
             [(ngModel)]="newMessage"
-            (input)="adjustTextareaHeight($event)"
-          ></textarea>
+            ></textarea>
+            <!-- (input)="adjustTextareaHeight($event)" -->
           <button (click)="sendMessage()">Send</button>
         </div>
       </div>
     </div>
   </div>
 </div>
+<app-loading-spinner [isLoading]="isLoading"></app-loading-spinner>
