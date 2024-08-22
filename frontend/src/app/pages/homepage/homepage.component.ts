@@ -3,6 +3,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { WebService } from '../../services/web.service';
 import { LoadingSpinnerComponent } from "../../loading-spinner/loading-spinner.component";
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-homepage',
@@ -10,7 +11,8 @@ import { LoadingSpinnerComponent } from "../../loading-spinner/loading-spinner.c
   imports: [
     CommonModule,
     FormsModule,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    MatTooltipModule
 ],
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.scss']

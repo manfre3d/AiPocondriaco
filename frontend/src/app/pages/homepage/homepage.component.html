@@ -4,7 +4,13 @@
       <div class="main-content">
         <div class="header">
           <div class="header-left">
-            <div class="health-bar-wrapper">
+            <div class="health-bar-wrapper" 
+            matTooltip="Barra della salute! 
+            Si aggiornerà in automatico in base alla nostra conversazione. Attento a non farla scendere a 0! "
+            matTooltipPosition="above"
+            matTooltipShowDelay="500"
+            matTooltipHideDelay="200"
+            matTooltipClass="custom-tooltip">
               <div class="health-icon">
                 <img
                   src="../../../assets/images/pixel-heart-heart.png"
@@ -22,7 +28,13 @@
           </div>
         </div>
         <div class="content-area">
-          <div id="chat-box" class="chat-box">
+          <div id="chat-box" class="chat-box"
+            matTooltip="Area per conversazione. In quest'area avremmo il piacedere di tenere traccia della nostra conversazione!"
+            matTooltipPosition="above"
+            matTooltipShowDelay="500"
+            matTooltipHideDelay="200"
+            matTooltipClass="custom-tooltip"
+          >
             <div class="inner-chat-container">
 
               <textarea
@@ -39,17 +51,32 @@
             </div>
           </div>
           <div class="sidebar">
-            <div class="user-image">
+            <div class="user-image"
+            matTooltip="Immagine del profilo. Durante la nostra conversazione generero un'immagine del profilo che ti rispecchierà il più possibile!"
+            matTooltipPosition="above"
+            matTooltipShowDelay="500"
+            matTooltipHideDelay="200"
+            matTooltipClass="custom-tooltip">
               <img src="{{userImage?userImage:'https://via.placeholder.com/100'}}" alt="User Image" />
             </div>
-            <div class="user-info">
+            <div class="user-info"
+            matTooltip="Sezione informazioni! Cercherò di tenere traccia delle informazioni che mi fornisci qui!"
+            matTooltipPosition="above"
+            matTooltipShowDelay="500"
+            matTooltipHideDelay="200"
+            matTooltipClass="custom-tooltip">
               <p><strong>Informazioni:</strong> info utili dell'utente.</p> 
               <p *ngFor="let key of userKeys; index as i"><strong>
                 {{key}}:</strong> {{userValues[i]}}</p>
             </div>
           </div>
         </div>
-        <div class="input-box">
+        <div class="input-box"
+          matTooltip="Chat box per la nostra conversazione! Scrivi qui le tue domande e i tuoi dubbi. Non vedo l'ora di risponderti!"
+          matTooltipPosition="above"
+          matTooltipShowDelay="500"
+          matTooltipHideDelay="200"
+          matTooltipClass="custom-tooltip">
           <textarea
             placeholder="Type your message here..."
             [(ngModel)]="newMessage"
