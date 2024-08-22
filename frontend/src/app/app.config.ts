@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { WebService } from './services/web.service';
 import { HttpClient, HttpClientModule, provideHttpClient } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -11,6 +12,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     WebService,
     HttpClient,
-    HttpClientModule
+    HttpClientModule, provideAnimationsAsync()
   ]
 };
