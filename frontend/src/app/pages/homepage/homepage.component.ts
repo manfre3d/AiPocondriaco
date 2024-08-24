@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { WebService } from '../../services/web.service';
 import { LoadingSpinnerComponent } from "../../loading-spinner/loading-spinner.component";
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-homepage',
@@ -12,7 +13,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     CommonModule,
     FormsModule,
     LoadingSpinnerComponent,
-    MatTooltipModule
+    MatTooltipModule,
+    MatIconModule
 ],
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.scss']
