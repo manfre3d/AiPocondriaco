@@ -51,7 +51,7 @@
                 info
               </mat-icon>
 
-              <textarea
+              <textarea disabled
                 *ngFor="let message of messages; index as i"
                 class="message"
                 [ngClass]="{
@@ -66,18 +66,15 @@
             </div>
           </div>
           <div class="sidebar">
-            <div
-              class="user-image"
-            >
+            <div class="user-image">
               <mat-icon
-              matTooltip="Immagine del profilo. 
+                matTooltip="Immagine del profilo. 
               Durante la nostra conversazione generero un'immagine del profilo che ti rispecchierà il più possibile!"
-              matTooltipPosition="above"
-              matTooltipShowDelay="500"
-              matTooltipHideDelay="200"
-              matTooltipClass="custom-tooltip"
+                matTooltipPosition="above"
+                matTooltipShowDelay="500"
+                matTooltipHideDelay="200"
+                matTooltipClass="custom-tooltip"
                 class="info-icon image-info-icon"
-                
               >
                 info
               </mat-icon>
@@ -88,11 +85,8 @@
                 alt="User Image"
               />
             </div>
-            <div
-              class="user-info"
-
-            >
-            <!-- <mat-icon
+            <div class="user-info">
+              <!-- <mat-icon
             matTooltip="Sezione informazioni! 
             Cercherò di tenere traccia delle informazioni che mi fornisci qui!"
             matTooltipPosition="above"
@@ -110,12 +104,7 @@
             </div>
           </div>
         </div>
-        <div
-          class="input-box"
-
-        >
-        
-        
+        <div class="input-box">
           <textarea
             placeholder="Scrivi qui il tuo messaggio..."
             [(ngModel)]="newMessage"
@@ -123,15 +112,15 @@
           <!-- (input)="adjustTextareaHeight($event)" -->
           <button (click)="sendMessage()">Send</button>
           <mat-icon
-        matTooltip="Chat box per la nostra conversazione! Scrivi qui le tue domande e i tuoi dubbi. Non vedo l'ora di risponderti!"
-        matTooltipPosition="above"
-        matTooltipShowDelay="500"
-        matTooltipHideDelay="200"
-        matTooltipClass="custom-tooltip"
-          class="info-icon chat-section-icon"
-        >
-          info
-        </mat-icon>
+            matTooltip="Chat box per la nostra conversazione! Scrivi qui le tue domande e i tuoi dubbi. Non vedo l'ora di risponderti!"
+            matTooltipPosition="above"
+            matTooltipShowDelay="500"
+            matTooltipHideDelay="200"
+            matTooltipClass="custom-tooltip"
+            class="info-icon chat-section-icon"
+          >
+            info
+          </mat-icon>
         </div>
       </div>
     </div>
