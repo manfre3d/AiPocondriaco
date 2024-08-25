@@ -7,8 +7,8 @@ import { IntroComponent } from './pages/intro/intro.component';
 export const routes: Routes = [
     { "path": "", "component": LoginComponent },
     { "path": "login", "component": LoginComponent },
-    { "path": "homepage", "component": HomepageComponent },
-    { "path": "intro", "component": IntroComponent },
+    { "path": "homepage", "component": HomepageComponent, data: { animation: 'HomePage' }  },
+    { "path": "intro", "component": IntroComponent, data: { animation: 'IntroPage' }  },
     { path: 'error', component: ErrorPageComponent },
     { path: '**', redirectTo: '/error' }
   ];
