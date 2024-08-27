@@ -59,7 +59,7 @@
 .health-bar-wrapper {
   display: flex;
   align-items: center;
-  width: 80%; /* Ensure the health bar occupies 80% of its container */
+  width: 80%; 
 }
 
 .health-bar {
@@ -80,8 +80,9 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(to right, #ff0000, #ff9900, #ffff00, #00ff00);
-  filter: blur(8px); /* Apply blur effect */
-  z-index: 1; /* Ensure it is behind the inner bar */
+  filter: blur(8px); 
+  z-index: 1; 
+
 }
 
 .health-bar-inner {
@@ -92,6 +93,8 @@
   z-index: 2; /* Ensure it is above the blurry background */
   border: 1px solid black;
   border-radius: 15px;
+  transition: all 2s ease-in-out;
+
 }
 
 .health-icon {
@@ -105,8 +108,8 @@
 }
 
 .health-text {
-  font-size: 16px; /* Slightly larger font */
-  color: #ffffff; /* Changed to white for better contrast */
+  font-size: 16px; 
+  color: #ffffff; 
   margin-left: 10px;
   text-shadow: 1px 1px 2px #000000;
 }
