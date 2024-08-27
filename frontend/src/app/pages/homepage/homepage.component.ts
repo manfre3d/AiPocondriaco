@@ -36,11 +36,27 @@ export class HomepageComponent implements OnInit{
   userValues : any = []
   userImage : string = "https://via.placeholder.com/1000";
   // userImage : string = "https://oaidalleapiprodscus.blob.core.windows.net/private/org-1usEqFDsADBD2EmLgrZbd03g/user-grTWJWZV6ER2wMVZLtYHJ9r0/img-hiuU9OpLANInSEgK5wqA48Hj.png?st=2024-08-24T16%3A40%3A39Z&se=2024-08-24T18%3A40%3A39Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2024-08-23T23%3A10%3A16Z&ske=2024-08-24T23%3A10%3A16Z&sks=b&skv=2024-08-04&sig=bhrzjhZ2hqoD8ST0Fu0nH2egaiPxFZWwSsW9%2Bu0%2BMvs%3D";
+  resizeTextareas : boolean = false;
+
   constructor(private _webService: WebService, public dialog: MatDialog ){ }
+
   ngOnInit(): void {
     console.log(Object.keys(this.userInfos));
     this.userKeys = Object.keys(this.userInfos);
     this.userValues = Object.values(this.userInfos);
+  }
+
+  ngAfterViewChecked() {
+    if (this.resizeTextareas)
+      this.adjustTextareas(); 
+  }
+
+  adjustTextareas() {
+    this.resizeTextareas = false;
+    this.messages.forEach((message, index) => {
+      this.textareaAdjustment(message.type, index);
+    });
+    this.scrollToLastMessage("system");
   }
   
   adjustTextareaHeight(event: Event) {
@@ -54,14 +70,20 @@ export class HomepageComponent implements OnInit{
     this.userKeys = Object.keys(userInfoCalculated);
     this.userValues = Object.values(userInfoCalculated);
   }
-  textareaAdjustment(messageType: string){
-    let textareaId = messageType+(this.messages.length-1);
-    console.log(textareaId);
-    let textarea = document.getElementById(textareaId) as HTMLTextAreaElement | null;
-    if(textarea){
-      // textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight+10}px`;
-      console.log(textarea.style.height);
+  textareaAdjustment(messageType: string, index: number) {
+    const textareaId = `${messageType}${index}`;
+    const textarea = document.getElementById(textareaId) as HTMLTextAreaElement | null;
+    if (textarea) {
+      textarea.style.height = 'auto'; 
+      textarea.style.height = `${textarea.scrollHeight+10}px`; 
+    }
+  }
+  scrollToLastMessage(role: string){
+    console.log("change");
+    let lastMessagePosition = this.messages.length-1;
+    let lastMessageId = role+lastMessagePosition;
+    const textarea = document.getElementById(lastMessageId) as HTMLTextAreaElement | null;
+    if (textarea) {
       textarea?.scrollIntoView({ behavior: 'smooth' })
     }
   }
@@ -75,11 +97,9 @@ export class HomepageComponent implements OnInit{
     //chain of calls conversation functions + image generation
     this.isLoading = true;
     console.log(this.messages[this.messages.length-1].type)
-    // this.textareaAdjustment(this.messages[this.messages.length-1].type);
 
     this._webService.postConversazioneApi(messageToSend).subscribe({
         next: (response) => {
-          this.textareaAdjustment(this.messages[this.messages.length-1].type);
 
           console.log(response)
           this._webService.getConversazioneApi().subscribe({
@@ -90,15 +110,15 @@ export class HomepageComponent implements OnInit{
               console.log(`lunghezza conversazione ${maxLengthConversation}`);
               console.log(response?.conversation[maxLengthConversation].content);
               this.messages.push({ text: `System: ${messaggioAssistente}`, type: 'system' });
+              //activates the flag that allows for textarea resizing after messages array update
+              this.resizeTextareas = true;
+
               console.log("system"+(this.messages.length-1));
               console.log(this.messages);
-              // console.log(document.getElementById("system"+(this.messages.length-1))?.innerHTML)
               this._webService.getHealthScoreApi().subscribe({
                 next:(response)=>{
                   console.log("health score");
                   console.log(response);
-                  this.textareaAdjustment(this.messages[this.messages.length-1].type);
-                  
                   this.healthScore = response.data.healthScore;
                   this._webService.getUserInfo().subscribe({
                     next:(response)=>{
