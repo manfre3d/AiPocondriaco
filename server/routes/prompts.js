@@ -11,7 +11,12 @@ let message = {
     Dai sempre informazioni sui dati aggiornati alla tua ultima versione. 
     Ogni risposta che dai deve essere considerata tenendo a mente che verrà inserita in
     un componente html <p>. Quindi deve essere correttamente formattata in caso di liste e interruzioni di paragrafo.
-    Prenditi cura di mandare a capo il paragrafo che viene generato per rendere il testo più leggibile`
+    Prenditi cura di mandare a capo il paragrafo che viene generato per rendere il testo più leggibil.
+    Non menzionare il gdpr e la protezione dei dati e cerca sempre di fornire una risposta in tema salute e tema medico.
+    Nel caso in cui ti vengono richieste informazioni esterne, cerca sempre di fornire una risposta in base ai dati
+    in tuo possesso, inserendo un avvertimento e indicando che per informazioni più precise l'utente
+    si deve rivolgere a un medico. cerca su google riferimenti e possibili risposte.
+    Dove possibile inserisci link o altri rifermenti ai soggetti.`
 };
 
 let conversation = [];
@@ -19,7 +24,10 @@ conversation.push(message)
 // completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=conversation) 
 // message["content"] = "Assistant: {completion.choices[0].message.content} \nYou:"
 // conversation.push(completion.choices[0].message)
-
+const IMAGE_PROMPT_GENERATION =`based on the current conversation give me a paragraph in italiandescribing a picture
+            with the user physical description and write it in a somewhat funny way.
+            Make sure that the description you give is similar to this one and short
+            "A photo of an individual having fun"`;
 
 router.get("/",(req,res)=>{
     res.send("test prompts route");
@@ -150,14 +158,11 @@ router.get("/userInfo", async (req, res) => {
 
 router.get("/generateImage", async (req, res) => {
     try {
-
+        
         let tmpConversation = structuredClone(conversation)
         tmpConversation.push(({
             "role":"user",
-            "content":`based on the current conversation give me a paragraph describing a picture
-            with the user physical description and write it in a somewhat funny way.
-            Make sure that the description you give is similar to this one and short
-            "A photo of Giovanni's wearing headphones djing"`
+            "content":IMAGE_PROMPT_GENERATION
         }))
         console.log(tmpConversation);
         const response = await openai.chat.completions.create({
@@ -169,14 +174,16 @@ router.get("/generateImage", async (req, res) => {
         console.log("RESPONSE")
         console.log(response)
         console.log(response.choices[0].message)
-        let imageDescriptiong = response.choices[0].message.content;
+        let imageDescription = response.choices[0].message.content;
+        let imageDescritionForApi = imageDescription; 
         //additional filters for image prompt specificity
-        imageDescriptiong = imageDescriptiong + `consider this:
-            photo, photograph, raw photo,analog photo, 4k, fujifilm photograph, don't display any writing`;
+        imageDescription = imageDescription + ` considera questi stili:
+            photo, photograph, raw photo,analog photo, 4k, fujifilm photograph.
+            non includere scritte, frasi o vignette di alcun tipo `;
 
         const response2 = await openai.images.generate({
             model: "dall-e-3",
-            prompt: imageDescriptiong?imageDescriptiong:"a white siamese cat",
+            prompt: imageDescription?imageDescription:"a white siamese cat",
             n: 1,
             size: "1024x1024",
         });
@@ -184,7 +191,10 @@ router.get("/generateImage", async (req, res) => {
         console.log(image_url);
         return res.status(200).json({
             success: true,
-            data: image_url
+            data: {
+                image_url:image_url,
+                description: imageDescritionForApi
+            }
         })
     } catch (error) {
         console.log(error);
