@@ -37,6 +37,10 @@ export class HomepageComponent implements OnInit{
   userImage : string = "https://via.placeholder.com/1000";
   // userImage : string = "https://oaidalleapiprodscus.blob.core.windows.net/private/org-1usEqFDsADBD2EmLgrZbd03g/user-grTWJWZV6ER2wMVZLtYHJ9r0/img-hiuU9OpLANInSEgK5wqA48Hj.png?st=2024-08-24T16%3A40%3A39Z&se=2024-08-24T18%3A40%3A39Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2024-08-23T23%3A10%3A16Z&ske=2024-08-24T23%3A10%3A16Z&sks=b&skv=2024-08-04&sig=bhrzjhZ2hqoD8ST0Fu0nH2egaiPxFZWwSsW9%2Bu0%2BMvs%3D";
   resizeTextareas : boolean = false;
+  isLoadingImage: boolean = false;
+
+  imageVisible:boolean = false;
+  imageDescription: any = undefined;
 
   constructor(private _webService: WebService, public dialog: MatDialog ){ }
 
@@ -50,7 +54,12 @@ export class HomepageComponent implements OnInit{
     if (this.resizeTextareas)
       this.adjustTextareas(); 
   }
-
+  onImageLoad(){
+    console.log("loaded img");
+    console.log(this.userImage);
+    this.isLoadingImage = false;
+    this.imageVisible = true;
+  }
   adjustTextareas() {
     this.resizeTextareas = false;
     this.messages.forEach((message, index) => {
@@ -86,6 +95,20 @@ export class HomepageComponent implements OnInit{
     if (textarea) {
       textarea?.scrollIntoView({ behavior: 'smooth' })
     }
+  }
+  fetchUserImage(){                 
+    this.isLoadingImage = true;
+    this.imageVisible = false;
+    this._webService.getGeneratedUserImage().subscribe({
+      next:(response)=>{
+        console.log(response);
+        this.userImage = response.data.image_url;
+        this.imageDescription= response.data.description;
+      },
+      error:(err)=> {
+        this.isLoadingImage = false;
+      }, 
+    })
   }
   sendMessage() {
     console.log("Send form conversation")
@@ -126,12 +149,8 @@ export class HomepageComponent implements OnInit{
                       console.log("user info obj");
                       console.log(response);
                       this.processUserInfo(response?.data);
-                      this._webService.getGeneratedUserImage().subscribe({
-                        next:(response)=>{
-                          console.log(response);
-                          this.userImage = response.data;
-                        }
-                      })
+                      this.fetchUserImage();
+
                     }
                    
                   })
@@ -150,7 +169,8 @@ export class HomepageComponent implements OnInit{
   openImageModal(): void {
     this.dialog.open(ImageModalComponent, {
       data: {
-        imageSrc: this.userImage 
+        imageSrc: this.userImage ,
+        description: this.imageDescription
       },
       height: '500px', // Set the height to 70% of the viewport height
       width: '500px',  // Adjust the width based on the image or content

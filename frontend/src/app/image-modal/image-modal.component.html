@@ -1,3 +1,4 @@
 <div mat-dialog-content>
   <img [src]="imageSrc" alt="Image" style="width:100%; height: auto" />
+  <p *ngIf="description" class="image-description">{{ description }}</p>
 </div>

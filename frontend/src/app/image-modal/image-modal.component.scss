@@ -1,3 +1,48 @@
 .mat-dialog-content {
   padding: 0;
 }
+.image-description {
+  margin-top: 15px;
+  font-size: 1rem;
+  text-align: center;
+  color: #555;
+  /* Personalizzazione scrollbar per WebKit-based browsers (Chrome, Safari) */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.1); /* Colore della barra e del track */
+}
+
+.image-description::-webkit-scrollbar {
+  width: 6px; /* Larghezza della scrollbar */
+}
+
+.image-description::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1); /* Colore di sfondo della scrollbar */
+}
+
+.image-description::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3); /* Colore della barra */
+  border-radius: 10px; /* Angoli arrotondati */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Bordo leggero per visibilità */
+}
+
+.image-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.image-description {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  font-size: 1rem;
+  text-align: center;
+  box-sizing: border-box;
+  max-height: 35%;
+  overflow-y: auto;
+}
