@@ -27,7 +27,10 @@ conversation.push(message)
 const IMAGE_PROMPT_GENERATION =`based on the current conversation give me a paragraph in italiandescribing a picture
             with the user physical description and write it in a somewhat funny way.
             Make sure that the description you give is similar to this one and short
-            "A photo of an individual having fun"`;
+            "A photo of an individual having fun" if you see specific data displayed
+            numerically make the information more easy to understand in words without including specific sizes or numbers
+            but giving a generic description. Consider accurately the size that are described and physical
+            appearence that is described by the user`;
 
 router.get("/",(req,res)=>{
     res.send("test prompts route");
