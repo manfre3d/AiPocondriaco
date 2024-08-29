@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Informazioni Utente</h2>
+<mat-dialog-content>
+  <div class="user-info-modal-content">
+    <p *ngFor="let key of paginatedKeys; let i = index">
+      <strong>{{ key }}:</strong> {{ paginatedValues[i] }}
+    </p>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="center">
+  <button mat-button (click)="previousPage()" [disabled]="currentPage === 0" class="pagination-button">
+    Precedente
+  </button>
+  <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
+  <button mat-button (click)="nextPage()" [disabled]="currentPage >= totalPages - 1" class="pagination-button">
+    Successivo
+  </button>
+  <button mat-button mat-dialog-close class="close-button">Chiudi</button>
+</mat-dialog-actions>
