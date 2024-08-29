@@ -2,12 +2,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 85vw; /* Set the width to 85% of the viewport width */
-  height: 85vh; /* Set the height to 85% of the viewport height */
+  width: 85vw;
+  height: 85vh;
 }
 
 .container {
-  background-color: #0bd8d3; /* Changed background color */
+  background-color: #0bd8d3;
   border-radius: 15px;
   display: flex;
   width: 100%;
@@ -22,7 +22,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 20px; /* Added padding to inner container */
+  padding: 20px;
 }
 
 .main-content {
@@ -30,10 +30,10 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  overflow: hidden; /* Ensure content doesn't overflow */
-  background-color: #ffffff; /* Background color for main content */
+  overflow: hidden;
+  background-color: #ffffff;
   border-radius: 15px;
-  padding: 20px; /* Added padding */
+  padding: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -59,12 +59,12 @@
 .health-bar-wrapper {
   display: flex;
   align-items: center;
-  width: 80%; 
+  width: 80%;
 }
 
 .health-bar {
   width: 100%;
-  height: 30px; /* Increased height */
+  height: 30px;
   position: relative;
   margin-left: 10px;
   border-radius: 15px;
@@ -80,9 +80,8 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(to right, #ff0000, #ff9900, #ffff00, #00ff00);
-  filter: blur(8px); 
-  z-index: 1; 
-
+  filter: blur(8px);
+  z-index: 1;
 }
 
 .health-bar-inner {
@@ -90,11 +89,10 @@
   background: linear-gradient(to right, #ff0000, #ff9900, #ffff00, #00ff00);
   position: absolute;
   left: 0;
-  z-index: 2; /* Ensure it is above the blurry background */
+  z-index: 2;
   border: 1px solid black;
   border-radius: 15px;
   transition: all 2s ease-in-out;
-
 }
 
 .health-icon {
@@ -103,20 +101,20 @@
 }
 
 .health-icon img {
-  width: 40px; /* Increased size */
-  height: 40px; /* Increased size */
+  width: 40px;
+  height: 40px;
 }
 
 .health-text {
-  font-size: 16px; 
-  color: #ffffff; 
+  font-size: 16px;
+  color: #ffffff;
   margin-left: 10px;
   text-shadow: 1px 1px 2px #000000;
 }
 
 .date {
   font-size: 14px;
-  color: #ffffff; /* Changed to white for better contrast */
+  color: #ffffff;
   text-align: right;
 }
 
@@ -124,7 +122,7 @@
   display: flex;
   flex-grow: 1;
   overflow: hidden;
-  padding-bottom: 20px; /* Changed margin to padding-bottom */
+  padding-bottom: 20px;
 }
 
 .chat-box {
@@ -139,17 +137,18 @@
   flex-direction: column;
   width: 80%;
 }
+
 .inner-chat-container {
   display: flex;
   flex-direction: column;
 }
+
 .message {
   padding: 15px;
   border-radius: 15px;
   margin-bottom: 10px;
   max-width: 70%;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  // display: inline-block;
   display: block;
   font-size: 14px;
   line-height: 1.4;
@@ -175,7 +174,7 @@
 
 .sidebar {
   background-color: #ffffff;
-  width: 35%; /* Set width to 35% */
+  width: 35%;
   border-radius: 15px;
   padding: 20px;
   color: #333333;
@@ -184,17 +183,15 @@
   justify-content: center;
   flex-direction: column;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  // overflow-y: auto;
   overflow-x: hidden;
-
   width: 20%;
 }
+
 .user-image {
   height: 40%;
   margin-bottom: 20px;
   position: relative;
   cursor: pointer;
-  // width: 100%; 
   display: block;
   overflow: hidden;
 }
@@ -203,15 +200,15 @@
   height: 100%;
   display: block;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border: 2px solid #0bd8d3; 
-  transform: scale(0.95); 
-  filter: blur(2px); 
-  transition: transform 1s ease, filter 1s ease; 
+  border: 2px solid #0bd8d3;
+  transform: scale(0.95);
+  filter: blur(2px);
+  transition: transform 1s ease, filter 1s ease;
 }
 
 .user-image img.image-loaded {
-  transform: scale(1); 
-  filter: blur(0); 
+  transform: scale(1);
+  filter: blur(0);
 }
 
 .user-image img.fade-in {
@@ -223,21 +220,25 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 4px; 
-  background-color: rgba(0, 0, 0, 0.1); 
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.1);
   z-index: 99;
 }
 
 .loading-bar {
   height: 100%;
   width: 0;
-  background-color: #0bd8d3; 
+  background-color: #0bd8d3;
   animation: load 2s linear infinite;
 }
 
 @keyframes load {
-  0% { width: 0; }
-  100% { width: 100%; }
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
 }
 
 @keyframes fadeIn {
@@ -274,7 +275,6 @@
   border: 1px solid #ccc;
   font-size: 14px;
   resize: none;
-  // overflow: hidden;
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -282,44 +282,63 @@
   padding: 15px 30px;
   border: none;
   border-radius: 15px;
-  background-color: #007bff;
+  background-color: #0bd8d3;
   color: white;
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-left: 10px;
-  background-color: #0bd8d3; /* Subtle color usage */
 }
 
 .input-box button:hover {
-  background-color: #0aa6a2; /* Darken the hover state */
+  background-color: #0aa6a1d2;
 }
+
 ::ng-deep .custom-tooltip {
-  // background-color: #ffcc00;
   white-space: pre-line;
   color: black;
   font-size: 14px;
   padding: 8px;
   border-radius: 4px;
 }
+
 .info-icon {
-  // font-size: 20px;
   width: 40px;
   color: #78e2e0d6;
   cursor: pointer;
   margin-left: 8px;
 }
+
 .chat-box-icon {
   margin-left: auto;
   text-align: end;
 }
-.image-info-icon{
+
+.image-info-icon {
   position: absolute;
   right: 0;
   top: 10px;
   z-index: 99;
 }
-.chat-section-icon{
+
+.chat-section-icon {
   margin-right: auto;
-    margin-bottom: auto;
+  margin-bottom: auto;
+}
+
+.magnifying-glass-icon {
+  cursor: pointer;
+  margin-left: 5px;
+  vertical-align: middle;
+  color: #0bd8d3;
+}
+
+.magnifying-glass-icon:hover {
+  color: #0bd8d5c1;
+}
+
+.disabled-icon {
+  color: #ccc;
+  cursor: not-allowed;
+  pointer-events: none;
 }

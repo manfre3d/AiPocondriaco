@@ -19,9 +19,7 @@
               </div>
               <div class="health-text">{{ healthScore }}%</div>
               <mat-icon
-                matTooltip="Barra della salute! 
-                Si aggiornerà in automatico in base alla nostra conversazione. 
-                Attento a non farla scendere tropp!"
+                matTooltip="Barra della salute! Si aggiornerà automaticamente in base alla nostra conversazione. Attento a non farla scendere troppo!"
                 matTooltipPosition="above"
                 matTooltipShowDelay="500"
                 matTooltipHideDelay="200"
@@ -40,8 +38,7 @@
           <div id="chat-box" class="chat-box">
             <div class="inner-chat-container">
               <mat-icon
-                matTooltip="Area per conversazione. 
-              In quest'area avremmo il piacedere di tenere traccia della nostra conversazione!"
+                matTooltip="Area di conversazione. Qui possiamo tenere traccia della nostra conversazione!"
                 matTooltipPosition="above"
                 matTooltipShowDelay="500"
                 matTooltipHideDelay="200"
@@ -51,7 +48,8 @@
                 info
               </mat-icon>
 
-              <textarea disabled
+              <textarea
+                disabled
                 *ngFor="let message of messages; index as i"
                 class="message"
                 [ngClass]="{
@@ -61,15 +59,13 @@
                 [innerHTML]="message.text"
                 id="{{ message.type + i }}"
               >
-                <!-- {{ message.text }} -->
               </textarea>
             </div>
           </div>
           <div class="sidebar">
             <div class="user-image">
               <mat-icon
-                matTooltip="Immagine del profilo. 
-              Durante la nostra conversazione generero un'immagine del profilo che ti rispecchierà il più possibile!"
+                matTooltip="Immagine del profilo. Durante la nostra conversazione, genererò un'immagine del profilo che ti rispecchierà il più possibile!"
                 matTooltipPosition="above"
                 matTooltipShowDelay="500"
                 matTooltipHideDelay="200"
@@ -86,26 +82,39 @@
               </ng-container>
 
               <img
-              [src]="userImage"
-              [class.image-loaded]="imageVisible"
-              alt="User Image"
-              (load)="onImageLoad()"
-              (click)="openImageModal()"
+                [src]="userImage"
+                [class.image-loaded]="imageVisible"
+                alt="User Image"
+                (load)="onImageLoad()"
+                (click)="openImageModal()"
               />
             </div>
             <div class="user-info">
               <!-- <mat-icon
-            matTooltip="Sezione informazioni! 
-            Cercherò di tenere traccia delle informazioni che mi fornisci qui!"
-            matTooltipPosition="above"
-            matTooltipShowDelay="500"
-            matTooltipHideDelay="200"
-            matTooltipClass="custom-tooltip"
-              class="info-icon info-section-icon"
-            >
-              info
-            </mat-icon> -->
-              <p><strong>Informazioni:</strong> info utili dell'utente.</p>
+                matTooltip="Sezione informazioni! Qui terrò traccia delle informazioni che mi fornisci."
+                matTooltipPosition="above"
+                matTooltipShowDelay="500"
+                matTooltipHideDelay="200"
+                matTooltipClass="custom-tooltip"
+                class="info-icon info-section-icon"
+              >
+                info
+              </mat-icon> -->
+              <p>
+                <strong>Informazioni:</strong> info utili dell'utente.
+                <mat-icon
+                  class="magnifying-glass-icon"
+                  matTooltip="Clicca per visualizzare tutte le informazioni disponibili sull'utente."
+                  matTooltipPosition="above"
+                  matTooltipShowDelay="500"
+                  matTooltipHideDelay="200"
+                  [ngClass]="{'disabled-icon': userKeys.length === 0}"
+                  [ngClass]="{ 'disabled-icon': userKeys.length === 0 }"
+                  (click)="userKeys.length > 0 && openUserInfoModal()"
+                >
+                  search
+                </mat-icon>
+              </p>
               <p *ngFor="let key of userKeys; index as i">
                 <strong> {{ key }}:</strong> {{ userValues[i] }}
               </p>
@@ -117,7 +126,6 @@
             placeholder="Scrivi qui il tuo messaggio..."
             [(ngModel)]="newMessage"
           ></textarea>
-          <!-- (input)="adjustTextareaHeight($event)" -->
           <button (click)="sendMessage()">Send</button>
           <mat-icon
             matTooltip="Chat box per la nostra conversazione! Scrivi qui le tue domande e i tuoi dubbi. Non vedo l'ora di risponderti!"
