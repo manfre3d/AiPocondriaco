@@ -34,7 +34,8 @@ export class HomepageComponent implements OnInit{
   userInfos : any= {};
   userKeys : any = []
   userValues : any = []
-  userImage : string = "https://via.placeholder.com/1000";
+  userImage : string = "../../../assets/images/user_customer_person.png";
+  // userImage : string = "https://via.placeholder.com/1000";
   // userImage : string = "https://oaidalleapiprodscus.blob.core.windows.net/private/org-1usEqFDsADBD2EmLgrZbd03g/user-grTWJWZV6ER2wMVZLtYHJ9r0/img-hiuU9OpLANInSEgK5wqA48Hj.png?st=2024-08-24T16%3A40%3A39Z&se=2024-08-24T18%3A40%3A39Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2024-08-23T23%3A10%3A16Z&ske=2024-08-24T23%3A10%3A16Z&sks=b&skv=2024-08-04&sig=bhrzjhZ2hqoD8ST0Fu0nH2egaiPxFZWwSsW9%2Bu0%2BMvs%3D";
   resizeTextareas : boolean = false;
   isLoadingImage: boolean = false;
@@ -114,7 +115,7 @@ export class HomepageComponent implements OnInit{
     console.log("Send form conversation")
     let messageToSend = this.newMessage;
     if (this.newMessage.trim() !== '') {
-      this.messages.push({ text: `User: ${this.newMessage}`, type: 'user' });
+      this.messages.push({ text: `${this.newMessage}`, type: 'user' });
       this.newMessage = '';
     }
     //chain of calls conversation functions + image generation
@@ -132,7 +133,7 @@ export class HomepageComponent implements OnInit{
               let messaggioAssistente = response?.conversation[maxLengthConversation].content;
               console.log(`lunghezza conversazione ${maxLengthConversation}`);
               console.log(response?.conversation[maxLengthConversation].content);
-              this.messages.push({ text: `System: ${messaggioAssistente}`, type: 'system' });
+              this.messages.push({ text: `${messaggioAssistente}`, type: 'system' });
               //activates the flag that allows for textarea resizing after messages array update
               this.resizeTextareas = true;
 
