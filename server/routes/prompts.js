@@ -1,211 +1,187 @@
 const express = require("express");
-const router = express.Router()
-const openai =require("../server.js");
-
-let message = {
-    "role":"user", 
-    "content": `Questo è l'inizio della conversazione. 
-    Tu sei Ai pocondriaco un assistente virtuale per la salute è il benessere della persona.
-    Ogni volta che ti chiedono chi sei dovrai rispondere che sei l'assistente dell'applicazione
-    AI Pocondria. 
-    Dai sempre informazioni sui dati aggiornati alla tua ultima versione. 
-    Ogni risposta che dai deve essere considerata tenendo a mente che verrà inserita in
-    un componente html <p>. Quindi deve essere correttamente formattata in caso di liste e interruzioni di paragrafo.
-    Prenditi cura di mandare a capo il paragrafo che viene generato per rendere il testo più leggibil.
-    Non menzionare il gdpr e la protezione dei dati e cerca sempre di fornire una risposta in tema salute e tema medico.
-    Nel caso in cui ti vengono richieste informazioni esterne, cerca sempre di fornire una risposta in base ai dati
-    in tuo possesso, inserendo un avvertimento e indicando che per informazioni più precise l'utente
-    si deve rivolgere a un medico. cerca su google riferimenti e possibili risposte.
-    Dove possibile inserisci link o altri rifermenti ai soggetti.`
-};
+const router = express.Router();
+const openai = require("../server.js");
+const {
+  OPENAI_MODEL_TEXT_GENERATION,
+  OPENAI_MODEL_IMAGE_GENERATION,
+  IMAGE_GENERATION_PROMPT,
+  INITIAL_MESSAGE,
+  HEALTH_SCORE_MESSAGE,
+  USER_DESCRIPTION_MESSAGE,
+} = require("../constants.js");
 
 let conversation = [];
-conversation.push(message)
-// completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=conversation) 
-// message["content"] = "Assistant: {completion.choices[0].message.content} \nYou:"
-// conversation.push(completion.choices[0].message)
-const IMAGE_PROMPT_GENERATION =`based on the current conversation give me a paragraph in italiandescribing a picture
-            with the user physical description and write it in a somewhat funny way.
-            Make sure that the description you give is similar to this one and short
-            "A photo of an individual having fun" if you see specific data displayed
-            numerically make the information more easy to understand in words without including specific sizes or numbers
-            but giving a generic description. Consider accurately the size that are described and physical
-            appearence that is described by the user`;
+conversation.push(INITIAL_MESSAGE);
 
-router.get("/",(req,res)=>{
-    res.send("test prompts route");
-})
-
-//Basic post test with chat gpt
-router.post("/conversation", async (req, res) => {
-    try {
-        console.log(req.body);
-        conversation.push(({
-            "role":"user",
-            "content":req.body.messagePrompt
-        }))
-        console.log(conversation);
-        const response = await openai.chat.completions.create({
-            // messages: [{ role: "system", content: req.body.messagePrompt }],
-            messages: conversation,
-            model: "gpt-3.5-turbo",
-        });
-        message["content"] = `${response.choices[0].message.content} \nYou:`
-
-        console.log("RESPONSE")
-        console.log(response)
-        console.log(response.choices[0].message)
-        conversation.push(response.choices[0].message)
-
-        return res.status(200).json({
-            success: true,
-            data:response.choices[0].message
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(400).json({
-            success: false,
-            error: error.response ? error.response.data : "there was an issue on the server"
-        })
-    }
+router.get("/", (req, res) => {
+  res.send("test prompts route");
 });
+
+router.post("/conversation", async (req, res) => {
+  try {
+    console.log(req.body);
+    conversation.push({
+      role: "user",
+      content: req.body.messagePrompt,
+    });
+    console.log(conversation);
+
+    const response = await openai.chat.completions.create({
+      messages: conversation,
+      model: OPENAI_MODEL_TEXT_GENERATION,
+    });
+
+    INITIAL_MESSAGE.content = `${response.choices[0].message.content} \nYou:`;
+    console.log("RESPONSE");
+    console.log(response);
+    console.log(response.choices[0].message);
+
+    conversation.push(response.choices[0].message);
+
+    return res.status(200).json({
+      success: true,
+      data: response.choices[0].message,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      success: false,
+      error: error.response
+        ? error.response.data
+        : "there was an issue on the server",
+    });
+  }
+});
+
 router.get("/conversation", async (req, res) => {
-    console.log(conversation)
-    res.status(200).json({ conversation: conversation});
-})
+  console.log(conversation);
+  res.status(200).json({ conversation: conversation });
+});
 
 router.get("/healthScore", async (req, res) => {
-    try {
-        // console.log(req.body);
-        let tmpConversation = structuredClone(conversation)
-        tmpConversation.push(({
-            "role":"user",
-            "content":`based on the current conversation give me a json object with a score 
-            from 0 to 100 of my health conditions provide the response in a json format similar to
-            this structure {healthScore:value}`
-        }))
-        console.log(tmpConversation);
-        const response = await openai.chat.completions.create({
-            // messages: [{ role: "system", content: req.body.messagePrompt }],
-            messages: tmpConversation,
-            model: "gpt-3.5-turbo",
-        });
-        message["content"] = `${response.choices[0].message.content} \nYou:`
+  try {
+    // console.log(req.body);
+    let tmpConversation = structuredClone(conversation);
+    tmpConversation.push({
+      role: "user",
+      content: HEALTH_SCORE_MESSAGE,
+    });
+    console.log(tmpConversation);
+    const response = await openai.chat.completions.create({
+      // messages: [{ role: "system", content: req.body.messagePrompt }],
+      messages: tmpConversation,
+      model: OPENAI_MODEL_TEXT_GENERATION,
+    });
+    INITIAL_MESSAGE["content"] = `${response.choices[0].message.content} \nYou:`;
 
-        console.log("RESPONSE")
-        console.log(response)
-        console.log(response.choices[0].message)
-        let healthScore = JSON.parse(response.choices[0].message.content);
-        // conversation.push(response.choices[0].message)
+    console.log("RESPONSE");
+    console.log(response);
+    console.log(response.choices[0].message);
+    let healthScore = JSON.parse(response.choices[0].message.content);
+    // conversation.push(response.choices[0].message)
 
-        return res.status(200).json({
-            success: true,
-            data: healthScore
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(400).json({
-            success: false,
-            error: error.response ? error.response.data : "there was an issue on the server"
-        })
-    }
-})
-
+    return res.status(200).json({
+      success: true,
+      data: healthScore,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      success: false,
+      error: error.response
+        ? error.response.data
+        : "there was an issue on the server",
+    });
+  }
+});
 
 router.get("/userInfo", async (req, res) => {
-    try {
-        // console.log(req.body);
-        let tmpConversation = structuredClone(conversation)
-        tmpConversation.push(({
-            "role":"user",
-            "content":`based on the current conversation give me an 
-            object with structure key value with my health and body 
-            conditions, name, surname and email if given. Do not include a value in the object
-            if it's not present in the conversation.
-            Make sure that the information have a significant 
-            name in the key of the object and a short concise value in the 
-            respective value associated to the key that you are going to provide. 
-            Everything has to be returned in a json object of a similar form like 
-            {Altezza: "1,80m",AttivitaFisica:"Non pratico sport da almeno 1 anno",BMI:23.15,Età:28,Nome:"Manfredi",Peso:"75kg",Sesso:"Maschio"} 
-            translate everything in italian and be sure that the object doesn't have
-            nested objects. Provide the object in string format on one line without line breaks.
-            Make sure that the keys of the object don't contain special character or eiphens and that the values
-            in the object don't contain','`
-        }))
-        console.log(tmpConversation);
-        const response = await openai.chat.completions.create({
-            // messages: [{ role: "system", content: req.body.messagePrompt }],
-            messages: tmpConversation,
-            model: "gpt-3.5-turbo",
-        });
-        message["content"] = `${response.choices[0].message.content} \nYou:`
+  try {
+    // console.log(req.body);
+    let tmpConversation = structuredClone(conversation);
+    tmpConversation.push({
+      role: "user",
+      content: USER_DESCRIPTION_MESSAGE,
+    });
+    console.log(tmpConversation);
+    const response = await openai.chat.completions.create({
+      // messages: [{ role: "system", content: req.body.messagePrompt }],
+      messages: tmpConversation,
+      model: OPENAI_MODEL_TEXT_GENERATION,
+    });
+    INITIAL_MESSAGE["content"] = `${response.choices[0].message.content} \nYou:`;
 
-        console.log("RESPONSE")
-        console.log(response)
-        console.log(response.choices[0].message)
-        let userInfo = JSON.parse(response.choices[0].message.content);
-        conversation.push(response.choices[0].message)
+    console.log("RESPONSE");
+    console.log(response);
+    console.log(response.choices[0].message);
+    let userInfo = JSON.parse(response.choices[0].message.content);
+    conversation.push(response.choices[0].message);
 
-        return res.status(200).json({
-            success: true,
-            data: userInfo
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(400).json({
-            success: false,
-            error: error.response ? error.response.data : "there was an issue on the server"
-        })
-    }
-})
+    return res.status(200).json({
+      success: true,
+      data: userInfo,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      success: false,
+      error: error.response
+        ? error.response.data
+        : "there was an issue on the server",
+    });
+  }
+});
 
 router.get("/generateImage", async (req, res) => {
-    try {
-        
-        let tmpConversation = structuredClone(conversation)
-        tmpConversation.push(({
-            "role":"user",
-            "content":IMAGE_PROMPT_GENERATION
-        }))
-        console.log(tmpConversation);
-        const response = await openai.chat.completions.create({
-            // messages: [{ role: "system", content: req.body.messagePrompt }],
-            messages: tmpConversation,
-            model: "gpt-3.5-turbo",
-        });
-        //Ciao, sono Manfredi ho 28 anni e sono un uomo di 1,80m e peso 75kg.
-        console.log("RESPONSE")
-        console.log(response)
-        console.log(response.choices[0].message)
-        let imageDescription = response.choices[0].message.content;
-        let imageDescritionForApi = imageDescription; 
-        //additional filters for image prompt specificity
-        imageDescription = imageDescription + ` considera questi stili:
+  try {
+    let tmpConversation = structuredClone(conversation);
+    tmpConversation.push({
+      role: "user",
+      content: IMAGE_GENERATION_PROMPT,
+    });
+    console.log(tmpConversation);
+    const response = await openai.chat.completions.create({
+      // messages: [{ role: "system", content: req.body.messagePrompt }],
+      messages: tmpConversation,
+      model: OPENAI_MODEL_TEXT_GENERATION,
+    });
+    //Ciao, sono Manfredi ho 28 anni e sono un uomo di 1,80m e peso 75kg.
+    console.log("RESPONSE");
+    console.log(response);
+    console.log(response.choices[0].message);
+    let imageDescription = response.choices[0].message.content;
+    let imageDescritionForApi = imageDescription;
+    //additional filters for image prompt specificity
+    imageDescription =
+      imageDescription +
+      ` considera questi stili:
             photo, photograph, raw photo,analog photo, 4k, fujifilm photograph.
             non includere scritte, frasi o vignette di alcun tipo `;
 
-        const response2 = await openai.images.generate({
-            model: "dall-e-3",
-            prompt: imageDescription?imageDescription:"a white siamese cat",
-            n: 1,
-            size: "1024x1024",
-        });
-        let image_url = response2.data[0].url;
-        console.log(image_url);
-        return res.status(200).json({
-            success: true,
-            data: {
-                image_url:image_url,
-                description: imageDescritionForApi
-            }
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(400).json({
-            success: false,
-            error: error.response ? error.response.data : "there was an issue on the server"
-        })
-    }
-})
+    const response2 = await openai.images.generate({
+      model: OPENAI_MODEL_IMAGE_GENERATION,
+      prompt: imageDescription ? imageDescription : "a white siamese cat",
+      n: 1,
+      size: "1024x1024",
+    });
+    let image_url = response2.data[0].url;
+    console.log(image_url);
+    return res.status(200).json({
+      success: true,
+      data: {
+        image_url: image_url,
+        description: imageDescritionForApi,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      success: false,
+      error: error.response
+        ? error.response.data
+        : "there was an issue on the server",
+    });
+  }
+});
 
 module.exports = router;
