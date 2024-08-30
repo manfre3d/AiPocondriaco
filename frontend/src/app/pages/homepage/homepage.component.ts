@@ -28,7 +28,7 @@ export class HomepageComponent implements OnInit {
   chatBox = document.getElementById('chat-box');
   messages: { text: string; type: string }[] = [
     {
-      text: "Ciao! Sono AI Pocondria, il tuo assistente virtuale per la salute e il benessere. Come posso aiutarti oggi?",
+      text: 'Ciao! Sono AI Pocondria, il tuo assistente virtuale per la salute e il benessere. Come posso aiutarti oggi?',
       type: 'system',
     },
     // { text: 'User: Another message to show how this looks.', type: 'user' }
@@ -46,6 +46,7 @@ export class HomepageComponent implements OnInit {
 
   imageVisible: boolean = false;
   imageDescription: any = undefined;
+  generateImageCounter: number = 0;
 
   constructor(
     private _webService: WebService,
@@ -109,6 +110,10 @@ export class HomepageComponent implements OnInit {
     }
   }
   fetchUserImage() {
+    if (this.generateImageCounter % 2 == 1) {
+      this.generateImageCounter++;
+      return;
+    }
     this.isLoadingImage = true;
     this.imageVisible = false;
     this._webService.getGeneratedUserImage().subscribe({
@@ -116,6 +121,7 @@ export class HomepageComponent implements OnInit {
         console.log(response);
         this.userImage = response.data.image_url;
         this.imageDescription = response.data.description;
+        this.generateImageCounter++;
       },
       error: (err) => {
         this.isLoadingImage = false;
