@@ -5,7 +5,8 @@ import { ErrorPageComponent } from './pages/error-page/error-page.component';
 import { IntroComponent } from './pages/intro/intro.component';
 
 export const routes: Routes = [
-    { "path": "", "component": LoginComponent },
+    { "path": "", "component": IntroComponent },
+    // { "path": "", "component": LoginComponent },
     { "path": "login", "component": LoginComponent },
     { "path": "homepage", "component": HomepageComponent, data: { animation: 'HomePage' }  },
     { "path": "intro", "component": IntroComponent, data: { animation: 'IntroPage' }  },
