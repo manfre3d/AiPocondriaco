@@ -28,7 +28,7 @@ export class HomepageComponent implements OnInit {
   chatBox = document.getElementById('chat-box');
   messages: { text: string; type: string }[] = [
     {
-      text: "Ciao sono AI Pocondrio, l'assistente virtuale per la salute e il benessere, come posso esserti utile oggi?",
+      text: "Ciao! Sono AI Pocondria, il tuo assistente virtuale per la salute e il benessere. Come posso aiutarti oggi?",
       type: 'system',
     },
     // { text: 'User: Another message to show how this looks.', type: 'user' }
