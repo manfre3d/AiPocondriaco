@@ -47,6 +47,7 @@ export class HomepageComponent implements OnInit {
   imageVisible: boolean = false;
   imageDescription: any = undefined;
   generateImageCounter: number = 0;
+  shouldScroll: boolean = false;
 
   constructor(
     private _webService: WebService,
@@ -62,6 +63,7 @@ export class HomepageComponent implements OnInit {
 
   ngAfterViewChecked() {
     if (this.resizeTextareas) this.adjustTextareas();
+    if(this.shouldScroll) this.scrollToLastMessage();
   }
   onImageLoad() {
     console.log('loaded img');
@@ -74,7 +76,7 @@ export class HomepageComponent implements OnInit {
     this.messages.forEach((message, index) => {
       this.textareaAdjustment(message.type, index);
     });
-    this.scrollToLastMessage('system');
+    this.scrollToLastMessage();
   }
 
   adjustTextareaHeight(event: Event) {
@@ -98,9 +100,11 @@ export class HomepageComponent implements OnInit {
       textarea.style.height = `${textarea.scrollHeight + 10}px`;
     }
   }
-  scrollToLastMessage(role: string) {
+  scrollToLastMessage() {
     console.log('change');
+    this.shouldScroll = false;
     let lastMessagePosition = this.messages.length - 1;
+    let role = this.messages[lastMessagePosition].type;
     let lastMessageId = role + lastMessagePosition;
     const textarea = document.getElementById(
       lastMessageId
@@ -135,6 +139,9 @@ export class HomepageComponent implements OnInit {
       this.messages.push({ text: `${this.newMessage}`, type: 'user' });
       this.newMessage = '';
     }
+    //scroll + size reset for user input box
+    this.shouldScroll = true;
+    this.resizeTextareas = true;
     //chain of calls conversation functions + image generation
     this.isLoading = true;
     console.log(this.messages[this.messages.length - 1].type);
@@ -156,7 +163,6 @@ export class HomepageComponent implements OnInit {
             });
             //activates the flag that allows for textarea resizing after messages array update
             this.resizeTextareas = true;
-
             console.log('system' + (this.messages.length - 1));
             console.log(this.messages);
             this._webService.getHealthScoreApi().subscribe({
