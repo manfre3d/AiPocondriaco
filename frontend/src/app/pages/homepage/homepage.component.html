@@ -48,7 +48,7 @@
                 info
               </mat-icon>
 
-              <textarea
+              <!-- <textarea
                 disabled
                 *ngFor="let message of messages; index as i"
                 class="message"
@@ -59,7 +59,22 @@
                 [innerHTML]="message.text"
                 id="{{ message.type + i }}"
               >
-              </textarea>
+              </textarea> -->
+              <section *ngFor="let message of messages; index as i"
+              [ngClass]="{
+                'system-message-container': message.type === 'system',
+                'user-message-container': message.type === 'user'
+              }"
+              >
+                <div class="message"
+                [ngClass]="{
+                  'system-message': message.type === 'system',
+                  'user-message': message.type === 'user'
+                }" 
+                id="{{ message.type + i }}"
+                [innerHTML]="message.text">
+                </div>
+              </section>
             </div>
           </div>
           <div class="sidebar">
@@ -116,7 +131,7 @@
                 </mat-icon>
               </p>
               <p *ngFor="let key of userKeys; index as i">
-                <strong> {{ key }}:</strong> {{ userValues[i] }}
+                <strong> {{ parseKey(key) }}:</strong> {{ userValues[i] }}
               </p>
             </div>
           </div>

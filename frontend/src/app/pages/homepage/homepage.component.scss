@@ -162,16 +162,23 @@
 
 .system-message {
   background-color: #e3f2fd;
-  align-self: flex-start;
+  // align-self: flex-start;
   color: #333;
 }
 
 .user-message {
   background-color: #d1e7dd;
-  align-self: flex-end;
+  // align-self: flex-end;
   color: #333;
 }
-
+.system-message-container{
+  display: flex;
+  justify-content: flex-start;
+}
+.user-message-container{
+  display: flex;
+  justify-content: flex-end;
+}
 .sidebar {
   background-color: #ffffff;
   width: 35%;

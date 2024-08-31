@@ -9,6 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { UserInfoModalComponent } from '../../user-info-modal/user-info-modal.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DataService } from '../../data.service';
 
 @Component({
   selector: 'app-homepage',
@@ -50,6 +51,7 @@ export class HomepageComponent implements OnInit {
   shouldScroll: boolean = false;
 
   constructor(
+    private dataService: DataService,
     private _webService: WebService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar
@@ -216,5 +218,10 @@ export class HomepageComponent implements OnInit {
         }
       );
     }
+  }
+  //makes the keys more readable for the user
+  parseKey(key:string):string{
+    return this.dataService.transformKeyString(key); 
+
   }
 }

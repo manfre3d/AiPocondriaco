@@ -2,7 +2,7 @@
 <mat-dialog-content>
   <div class="user-info-modal-content">
     <p *ngFor="let key of paginatedKeys; let i = index">
-      <strong>{{ key }}:</strong> {{ paginatedValues[i] }}
+      <strong>{{ parseKey(key) }}:</strong> {{ paginatedValues[i] }}
     </p>
   </div>
 </mat-dialog-content>

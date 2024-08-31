@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { DataService } from '../data.service';
 
 @Component({
   selector: 'app-user-info-modal',
@@ -17,6 +18,7 @@ export class UserInfoModalComponent implements OnInit {
   totalPages: number = 0; // Numero totale di pagine
 
   constructor(
+    private dataService: DataService,
     @Inject(MAT_DIALOG_DATA)
     public data: { userKeys: string[]; userValues: any[] }
   ) {}
@@ -53,5 +55,9 @@ export class UserInfoModalComponent implements OnInit {
     if (this.currentPage > 0) {
       this.currentPage--;
     }
+  }
+  //makes the keys more readable for the user so that instead of healthScore it shows Health Score
+  parseKey(key:string):string{
+    return this.dataService.transformKeyString(key); 
   }
 }
