@@ -10,6 +10,8 @@ const {
   USER_DESCRIPTION_MESSAGE,
 } = require("../constants.js");
 
+const { cleanResponseString, parseAndCleanObject } = require("../utils.js"); 
+
 let conversation = [];
 let tmpImageParagraph = null;
 let userInfo = null;
@@ -24,9 +26,10 @@ router.post("/conversation", async (req, res) => {
     console.log(req.body);
     conversation.push({
       role: "user",
-      content: req.body.messagePrompt+
-      ` Considera sempre che il testo che generi verrà inserito all'interno di un innerHTML 
-      quindi deve essere SEMPRE formattato in html`,
+      content:
+        req.body.messagePrompt +
+        ` Considera sempre che il testo che generi verrà inserito all'interno di un innerHTML 
+        quindi deve essere SEMPRE formattato in html`,
     });
     console.log(conversation);
 
@@ -35,13 +38,14 @@ router.post("/conversation", async (req, res) => {
       model: OPENAI_MODEL_TEXT_GENERATION,
     });
 
-    let cleanedMessage = response.choices[0].message.content.replace(/```html/g, '').replace(/```/g, '').trim();
+    let cleanedMessage = cleanResponseString(
+      response.choices[0].message.content
+    ); 
     INITIAL_MESSAGE.content = `${cleanedMessage} \nYou:`;
     console.log("RESPONSE");
     console.log(response);
     console.log(response.choices[0].message);
     conversation.push(response.choices[0].message);
-    
 
     return res.status(200).json({
       success: true,
@@ -65,7 +69,6 @@ router.get("/conversation", async (req, res) => {
 
 router.get("/healthScore", async (req, res) => {
   try {
-    // console.log(req.body);
     let tmpConversation = structuredClone(conversation);
     tmpConversation.push({
       role: "user",
@@ -73,7 +76,6 @@ router.get("/healthScore", async (req, res) => {
     });
     console.log(tmpConversation);
     const response = await openai.chat.completions.create({
-      // messages: [{ role: "system", content: req.body.messagePrompt }],
       messages: tmpConversation,
       model: OPENAI_MODEL_TEXT_GENERATION,
     });
@@ -83,10 +85,8 @@ router.get("/healthScore", async (req, res) => {
 
     console.log("RESPONSE");
     console.log(response);
-    console.log(response.choices[0].message);
     console.log(response.choices[0].message.content);
     let healthScore = JSON.parse(response.choices[0].message.content);
-    // conversation.push(response.choices[0].message)
 
     return res.status(200).json({
       success: true,
@@ -105,39 +105,42 @@ router.get("/healthScore", async (req, res) => {
 
 router.get("/userInfo", async (req, res) => {
   try {
-    // console.log(req.body);
     let tmpConversation = structuredClone(conversation);
     tmpConversation.push({
       role: "user",
       content:
-        USER_DESCRIPTION_MESSAGE + userInfo !=null
+        USER_DESCRIPTION_MESSAGE + userInfo != null
           ? `Prendi in considerazione l'oggetto precedentemente generato e espandilo aggiungendo nuove proprietà,
-          aggiornando le vecchie propietà e traducendo i nomi di queste propietà in italiano: 
-          ${JSON.stringify(userInfo)}.
-          considera che punteggioSalute corrisponde a healthScore tradotto in italiano, quindi prenditi cura di
-          aggiornare questo valore all'ultima versione nella conversazione.
-          Includi sempre nella risposta solo l'oggetto JSON, senza fornire informazioni aggiuntive. 
-          Considera che il contenuto della tua risposta verrà elaborato 
-          dal metodo JSON.parse().`
+            aggiornando le vecchie proprietà e traducendo i nomi di queste proprietà in italiano: 
+            ${JSON.stringify(userInfo)}.
+            considera che punteggioSalute corrisponde a healthScore tradotto in italiano, quindi prenditi cura di
+            aggiornare questo valore all'ultima versione nella conversazione.
+            Includi sempre nella risposta solo l'oggetto JSON, senza fornire informazioni aggiuntive. 
+            Considera che il contenuto della tua risposta verrà elaborato 
+            dal metodo JSON.parse().`
           : "",
     });
     console.log(tmpConversation);
     const response = await openai.chat.completions.create({
-      // messages: [{ role: "system", content: req.body.messagePrompt }],
       messages: tmpConversation,
       model: OPENAI_MODEL_TEXT_GENERATION,
     });
+    let cleanedResponseObj = parseAndCleanObject(
+      JSON.parse(
+        cleanResponseString(response.choices[0].message.content)
+      )
+    );
     INITIAL_MESSAGE[
       "content"
-    ] = `${response.choices[0].message.content} \nYou:`;
+    ] = `${cleanedResponseObj} \nYou:`;
 
     console.log("RESPONSE");
     console.log(response);
     console.log(response.choices[0].message);
-    let cleanedRespone = response.choices[0].message.content.replace(/```json\n|\n```/g, '');
-    userInfo = JSON.parse(cleanedRespone);
+    console.log(cleanedResponseObj);
+
+    userInfo = cleanedResponseObj;
     console.log(userInfo);
-    // userInfo = JSON.parse(response.choices[0].message.content);
     conversation.push(response.choices[0].message);
 
     return res.status(200).json({
@@ -165,30 +168,24 @@ router.get("/generateImage", async (req, res) => {
         IMAGE_GENERATION_PROMPT +
         (tmpImageParagraph = !null
           ? `Considera che questo: "${tmpImageParagraph}" è il testo che hai generato in precedenza, 
-          usalo come linea guida per il nuovo paragrafo.`
+            usalo come linea guida per il nuovo paragrafo.`
           : ""),
     });
     console.log(tmpConversation);
     const response = await openai.chat.completions.create({
-      // messages: [{ role: "system", content: req.body.messagePrompt }],
       messages: tmpConversation,
       model: OPENAI_MODEL_TEXT_GENERATION,
     });
-    //Ciao, sono Manfredi ho 28 anni e sono un uomo di 1,80m e peso 75kg.
-    console.log("RESPONSE");
-    console.log(response);
-    console.log(response.choices[0].message);
-    let cleanedImmageDescription= response.choices[0].message.content.replace(/```html/g, '').replace(/```/g, '').trim();
 
-    let imageDescription = cleanedImmageDescription;
+    let cleanedImageDescription = cleanResponseString(
+      response.choices[0].message.content
+    ); 
+    let imageDescription = cleanedImageDescription;
     tmpImageParagraph = imageDescription;
     console.log(`image paragraph : ${tmpImageParagraph}`);
     let imageDescritionForApi = imageDescription;
-    //additional filters for image prompt specificity
-    imageDescription =
-      imageDescription +
-      ` non includere scritte, frasi o vignette di alcun tipo,
-        image only without typography`;
+
+    imageDescription += ` non includere scritte, frasi o vignette di alcun tipo, image only without typography`;
     console.log(`imageDescription ${imageDescription}`);
     const response2 = await openai.images.generate({
       model: OPENAI_MODEL_IMAGE_GENERATION,
@@ -199,6 +196,7 @@ router.get("/generateImage", async (req, res) => {
     let image_url = response2.data[0].url;
     console.log(image_url);
     console.log(imageDescritionForApi);
+
     return res.status(200).json({
       success: true,
       data: {
