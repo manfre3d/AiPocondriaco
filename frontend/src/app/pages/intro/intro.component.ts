@@ -1,17 +1,18 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-intro',
   standalone: true,
-  imports: [],
+  imports: [MatIconModule],
   templateUrl: './intro.component.html',
-  styleUrl: './intro.component.scss'
+  styleUrl: './intro.component.scss',
 })
 export class IntroComponent {
   constructor(private router: Router) {}
 
-  navigateToHome(): void {
-    this.router.navigate(['/homepage']);
+  navigateToLogin(): void {
+    this.router.navigate(['/login']);
   }
 }

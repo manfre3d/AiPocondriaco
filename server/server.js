@@ -49,10 +49,12 @@ const patologieRouter =require("./routes/patologie.js");
 
 const attivitaFisiche =require("./routes/attivitaFisiche.js");
 
+const authRouter = require("./routes/auth.js");
+
 //-------------------------------------------------------
 /*  route use
     necessary to use the operations in the specific routes
-*/ 
+*/
 app.use("/prompts", promptsRouter)
 
 app.use("/utenti", utentiRouter)
@@ -60,6 +62,8 @@ app.use("/utenti", utentiRouter)
 app.use("/patologie", patologieRouter)
 
 app.use("/attivitaFisiche", attivitaFisiche)
+
+app.use("/auth", authRouter)
 
 //-------------------------------------------------------
 /*basic logger that shows the url being called on the server*/

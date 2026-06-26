@@ -1,13 +1,39 @@
-<div class="outer-container">
-  <div class="container">
-    <div class="inner-container">
-      <div class="main-content">
-        <div class="intro-container">
-          <h1 class="intro-title">AiPocondria</h1>
-          <!-- <img src="../../../assets/images/infirmary.png" alt=""> -->
-          <button mat-button (click)="navigateToHome()">Inizia!</button>
-        </div>
-      </div>
+<div class="landing-wrapper">
+
+  <div class="hero">
+    <div class="hero-icon">
+      <img src="../../../assets/images/pixel-heart-heart.png" alt="Health Icon" />
+    </div>
+    <h1 class="hero-title">AiPocondria</h1>
+    <p class="hero-tagline">Your AI-powered personal health companion.<br/>Chat about your symptoms, track your wellness, and get your personalised health avatar.</p>
+  </div>
+
+  <div class="features">
+    <div class="feature-card">
+      <span class="feature-icon">💬</span>
+      <h3>AI Health Chat</h3>
+      <p>Have a natural conversation about your health concerns with a GPT-4o powered assistant.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">❤️</span>
+      <h3>Health Score</h3>
+      <p>Watch your personal health score update in real time as you share more about yourself.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🎨</span>
+      <h3>Personal Avatar</h3>
+      <p>Get a unique AI-generated avatar that evolves with the profile you build through conversation.</p>
     </div>
   </div>
+
+  <button class="cta-button" (click)="navigateToLogin()">
+    Get Started
+    <mat-icon>arrow_forward</mat-icon>
+  </button>
+
+  <p class="disclaimer">
+    <mat-icon class="disclaimer-icon">warning</mat-icon>
+    AiPocondria is a demo application and is not a substitute for professional medical advice, diagnosis, or treatment.
+  </p>
+
 </div>

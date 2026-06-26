@@ -1,160 +1,139 @@
-<div class="outer-container">
-  <div class="container">
-    <div class="inner-container">
-      <div class="main-content">
-        <div class="header">
-          <div class="header-left">
-            <div class="health-bar-wrapper">
-              <div class="health-icon">
-                <img
-                  src="../../../assets/images/pixel-heart-heart.png"
-                  alt="Health Icon"
-                />
-              </div>
-              <div class="health-bar">
-                <div
-                  class="health-bar-inner"
-                  [style.width.%]="healthScore"
-                ></div>
-              </div>
-              <div class="health-text">{{ healthScore }}%</div>
-              <mat-icon
-                matTooltip="Barra della salute! Si aggiornerà automaticamente in base alla nostra conversazione. Attento a non farla scendere troppo!"
-                matTooltipPosition="above"
-                matTooltipShowDelay="500"
-                matTooltipHideDelay="200"
-                matTooltipClass="custom-tooltip"
-                class="info-icon"
-              >
-                info
-              </mat-icon>
-            </div>
-          </div>
-          <div class="header-right">
-            <div class="date">19 Giugno 2024</div>
-          </div>
-        </div>
-        <div class="content-area">
-          <div id="chat-box" class="chat-box">
-            <div class="inner-chat-container">
-              <mat-icon
-                matTooltip="Area di conversazione. Qui possiamo tenere traccia della nostra conversazione!"
-                matTooltipPosition="above"
-                matTooltipShowDelay="500"
-                matTooltipHideDelay="200"
-                matTooltipClass="custom-tooltip"
-                class="info-icon chat-box-icon"
-              >
-                info
-              </mat-icon>
+<div class="inner-container">
+  <div class="main-content">
 
-              <!-- <textarea
-                disabled
-                *ngFor="let message of messages; index as i"
-                class="message"
-                [ngClass]="{
-                  'system-message': message.type === 'system',
-                  'user-message': message.type === 'user'
-                }"
-                [innerHTML]="message.text"
-                id="{{ message.type + i }}"
-              >
-              </textarea> -->
-              <section *ngFor="let message of messages; index as i"
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="health-bar-wrapper">
+          <div class="health-icon">
+            <img src="../../../assets/images/pixel-heart-heart.png" alt="Health Icon" />
+          </div>
+          <div class="health-bar"
+            matTooltip="Your health score updates after each message. Keep it high!"
+            matTooltipPosition="above"
+            matTooltipShowDelay="500"
+            matTooltipClass="custom-tooltip">
+            <div class="health-bar-inner" [style.width.%]="healthScore"></div>
+          </div>
+          <div class="health-text">{{ healthScore }}%</div>
+          <span class="trend-indicator"
+            [class.trend-up]="healthTrend === 'up'"
+            [class.trend-down]="healthTrend === 'down'"
+            [class.trend-same]="healthTrend === 'same'">
+            <ng-container *ngIf="healthTrend === 'up'">↑</ng-container>
+            <ng-container *ngIf="healthTrend === 'down'">↓</ng-container>
+            <ng-container *ngIf="healthTrend === 'same'">→</ng-container>
+          </span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span class="date">{{ today }}</span>
+        <button class="icon-btn"
+          matTooltip="Start a new chat"
+          matTooltipPosition="below"
+          matTooltipClass="custom-tooltip"
+          (click)="resetChat()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+        <button class="icon-btn logout-btn"
+          matTooltip="Sign out"
+          matTooltipPosition="below"
+          matTooltipClass="custom-tooltip"
+          (click)="logout()">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Content area: chat + sidebar -->
+    <div class="content-area">
+      <div #chatBox id="chat-box" class="chat-box">
+        <div class="inner-chat-container">
+          <ng-container *ngFor="let message of messages; index as i">
+
+            <!-- Typing / streaming indicator -->
+            <div *ngIf="message.isStreaming && !message.text"
+              class="system-message-container">
+              <div class="message system-message typing-indicator">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+
+            <!-- Regular or streaming message -->
+            <section *ngIf="!message.isStreaming || message.text"
               [ngClass]="{
                 'system-message-container': message.type === 'system',
                 'user-message-container': message.type === 'user'
-              }"
-              >
+              }">
+              <div class="message-wrapper">
                 <div class="message"
-                [ngClass]="{
-                  'system-message': message.type === 'system',
-                  'user-message': message.type === 'user'
-                }" 
-                id="{{ message.type + i }}"
-                [innerHTML]="message.text">
+                  [ngClass]="{
+                    'system-message': message.type === 'system',
+                    'user-message': message.type === 'user'
+                  }"
+                  [innerHTML]="message.isStreaming ? message.text + '<span class=\'stream-cursor\'>▌</span>' : message.text">
                 </div>
-              </section>
-            </div>
-          </div>
-          <div class="sidebar">
-            <div class="user-image">
-              <mat-icon
-                matTooltip="Immagine del profilo. Durante la nostra conversazione, genererò un'immagine del profilo che ti rispecchierà il più possibile!"
-                matTooltipPosition="above"
-                matTooltipShowDelay="500"
-                matTooltipHideDelay="200"
-                matTooltipClass="custom-tooltip"
-                class="info-icon image-info-icon"
-              >
-                info
-              </mat-icon>
+                <span class="message-time">{{ message.time }}</span>
+              </div>
+            </section>
 
-              <ng-container *ngIf="isLoadingImage">
-                <div class="loading-bar-container">
-                  <div class="loading-bar"></div>
-                </div>
-              </ng-container>
-
-              <img
-                [src]="userImage"
-                [class.image-loaded]="imageVisible"
-                alt="User Image"
-                (load)="onImageLoad()"
-                (click)="openImageModal()"
-              />
-            </div>
-            <div class="user-info">
-              <!-- <mat-icon
-                matTooltip="Sezione informazioni! Qui terrò traccia delle informazioni che mi fornisci."
-                matTooltipPosition="above"
-                matTooltipShowDelay="500"
-                matTooltipHideDelay="200"
-                matTooltipClass="custom-tooltip"
-                class="info-icon info-section-icon"
-              >
-                info
-              </mat-icon> -->
-              <p>
-                <strong>Informazioni:</strong> info utili dell'utente.
-                <mat-icon
-                  class="magnifying-glass-icon"
-                  matTooltip="Clicca per visualizzare tutte le informazioni disponibili sull'utente."
-                  matTooltipPosition="above"
-                  matTooltipShowDelay="500"
-                  matTooltipHideDelay="200"
-                  [ngClass]="{'disabled-icon': userKeys.length === 0}"
-                  [ngClass]="{ 'disabled-icon': userKeys.length === 0 }"
-                  (click)="userKeys.length > 0 && openUserInfoModal()"
-                >
-                  search
-                </mat-icon>
-              </p>
-              <p *ngFor="let key of userKeys; index as i">
-                <strong> {{ parseKey(key) }}:</strong> {{ userValues[i] }}
-              </p>
-            </div>
-          </div>
+          </ng-container>
         </div>
-        <div class="input-box">
-          <textarea
-            placeholder="Scrivi qui il tuo messaggio..."
-            [(ngModel)]="newMessage"
-          ></textarea>
-          <button (click)="sendMessage()">Send</button>
-          <mat-icon
-            matTooltip="Chat box per la nostra conversazione! Scrivi qui le tue domande e i tuoi dubbi. Non vedo l'ora di risponderti!"
-            matTooltipPosition="above"
-            matTooltipShowDelay="500"
-            matTooltipHideDelay="200"
-            matTooltipClass="custom-tooltip"
-            class="info-icon chat-section-icon"
-          >
-            info
-          </mat-icon>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="user-image"
+          matTooltip="Your AI-generated avatar evolves as we learn more about you. Click to expand."
+          matTooltipPosition="left"
+          matTooltipShowDelay="500"
+          matTooltipClass="custom-tooltip"
+          (click)="openImageModal()">
+          <ng-container *ngIf="isLoadingImage">
+            <div class="loading-bar-container"><div class="loading-bar"></div></div>
+          </ng-container>
+          <img
+            [src]="userImage"
+            [class.image-loaded]="imageVisible"
+            alt="Your AI avatar"
+            (load)="onImageLoad()" />
+        </div>
+
+        <div class="user-info">
+          <div class="user-info-header">
+            <strong>Profile</strong>
+            <mat-icon class="magnifying-glass-icon"
+              matTooltip="View all collected profile info"
+              matTooltipPosition="above"
+              matTooltipShowDelay="500"
+              [class.disabled-icon]="userKeys.length === 0"
+              (click)="userKeys.length > 0 && openUserInfoModal()">
+              search
+            </mat-icon>
+          </div>
+          <p *ngFor="let key of userKeys.slice(0, 4); index as i">
+            <strong>{{ parseKey(key) }}:</strong> {{ userValues[i] }}
+          </p>
+          <p *ngIf="userKeys.length === 0" class="empty-profile">
+            Chat to build your profile.
+          </p>
         </div>
       </div>
     </div>
+
+    <!-- Input area -->
+    <div class="input-box">
+      <textarea
+        placeholder="Ask me about your health, symptoms, or wellbeing…"
+        [(ngModel)]="newMessage"
+        (keydown.enter)="onEnterKey($event)"
+        [disabled]="isStreaming"
+        rows="1">
+      </textarea>
+      <button (click)="sendMessage()" [disabled]="isStreaming || !newMessage.trim()">
+        <mat-icon>send</mat-icon>
+      </button>
+    </div>
+
   </div>
 </div>
-<app-loading-spinner [isLoading]="isLoading"></app-loading-spinner>

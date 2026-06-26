@@ -36,15 +36,25 @@ $frontend-theme: mat.define-light-theme((
 @include mat.all-component-themes($frontend-theme);
 
 /* You can add global styles to this file, and also import other style files */
-body{
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Roboto', sans-serif;
-    background-color: #f0f2f5;
+html, body {
+  height: 100%;
+  margin: 0;
 }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-h2{font-size: 1.4rem;}
-h3{font-size: 1.2rem;}
+
+body {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f0f2f5;
+  overflow-x: hidden;
+
+  @media (max-width: 768px) {
+    height: 100dvh;
+    align-items: stretch;
+  }
+}
+
+h2 { font-size: 1.4rem; }
+h3 { font-size: 1.2rem; }

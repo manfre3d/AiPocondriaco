@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { WebService } from '../../services/web.service';
-import { LoadingSpinnerComponent } from '../../loading-spinner/loading-spinner.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ImageModalComponent } from '../../image-modal/image-modal.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -11,13 +11,26 @@ import { UserInfoModalComponent } from '../../user-info-modal/user-info-modal.co
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from '../../data.service';
 
+interface Message {
+  text: string;
+  type: 'system' | 'user';
+  time: string;
+  isStreaming?: boolean;
+}
+
+const STORAGE_KEY_PREFIX = 'aip_messages_';
+const INITIAL_WELCOME: Message = {
+  text: 'Hello! I\'m AiPocondria, your personal AI health companion. Tell me about yourself or any health concerns you\'d like to discuss.',
+  type: 'system',
+  time: '',
+};
+
 @Component({
   selector: 'app-homepage',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    LoadingSpinnerComponent,
     MatTooltipModule,
     MatIconModule,
   ],
@@ -25,203 +38,244 @@ import { DataService } from '../../data.service';
   styleUrls: ['./homepage.component.scss'],
 })
 export class HomepageComponent implements OnInit {
-  isLoading: boolean = false;
-  chatBox = document.getElementById('chat-box');
-  messages: { text: string; type: string }[] = [
-    {
-      text: 'Ciao! Sono AI Pocondria, il tuo assistente virtuale per la salute e il benessere. Come posso aiutarti oggi?',
-      type: 'system',
-    },
-    // { text: 'User: Another message to show how this looks.', type: 'user' }
-  ];
-  newMessage: string = '';
-  healthScore: number = 100; // Example health value, you can dynamically update this
-  userInfos: any = {};
-  userKeys: any = [];
-  userValues: any = [];
-  userImage: string = '../../../assets/images/user_customer_person.png';
-  // userImage : string = "https://via.placeholder.com/1000";
-  // userImage : string = "https://oaidalleapiprodscus.blob.core.windows.net/private/org-1usEqFDsADBD2EmLgrZbd03g/user-grTWJWZV6ER2wMVZLtYHJ9r0/img-hiuU9OpLANInSEgK5wqA48Hj.png?st=2024-08-24T16%3A40%3A39Z&se=2024-08-24T18%3A40%3A39Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2024-08-23T23%3A10%3A16Z&ske=2024-08-24T23%3A10%3A16Z&sks=b&skv=2024-08-04&sig=bhrzjhZ2hqoD8ST0Fu0nH2egaiPxFZWwSsW9%2Bu0%2BMvs%3D";
-  resizeTextareas: boolean = false;
-  isLoadingImage: boolean = false;
+  @ViewChild('chatBox') chatBoxRef!: ElementRef<HTMLDivElement>;
 
-  imageVisible: boolean = false;
-  imageDescription: any = undefined;
-  generateImageCounter: number = 0;
-  shouldScroll: boolean = false;
+  isStreaming = false;
+  messages: Message[] = [];
+  newMessage = '';
+  healthScore = 100;
+  scoreHistory: number[] = [];
+  userInfos: any = {};
+  userKeys: string[] = [];
+  userValues: any[] = [];
+  userImage = '../../../assets/images/user_customer_person.png';
+  isLoadingImage = false;
+  imageVisible = false;
+  imageDescription: string | undefined;
+  generateImageCounter = 0;
+  today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   constructor(
     private dataService: DataService,
-    private _webService: WebService,
-    public dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private webService: WebService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private router: Router,
+    private zone: NgZone
   ) {}
 
   ngOnInit(): void {
-    console.log(Object.keys(this.userInfos));
-    this.userKeys = Object.keys(this.userInfos);
-    this.userValues = Object.values(this.userInfos);
+    INITIAL_WELCOME.time = this.currentTime();
+    this.loadMessagesFromStorage();
+    if (this.messages.length === 0) {
+      this.messages = [{ ...INITIAL_WELCOME }];
+    }
   }
 
-  ngAfterViewChecked() {
-    if (this.resizeTextareas) this.adjustTextareas();
-    if(this.shouldScroll) this.scrollToLastMessage();
+  get healthTrend(): 'up' | 'down' | 'same' | null {
+    if (this.scoreHistory.length < 2) return null;
+    const diff = this.scoreHistory[this.scoreHistory.length - 1] - this.scoreHistory[this.scoreHistory.length - 2];
+    if (diff > 0) return 'up';
+    if (diff < 0) return 'down';
+    return 'same';
   }
+
+  currentTime(): string {
+    return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  async sendMessage() {
+    const messageToSend = this.newMessage.trim();
+    if (!messageToSend || this.isStreaming) return;
+
+    this.newMessage = '';
+    this.messages.push({ text: messageToSend, type: 'user', time: this.currentTime() });
+
+    const streamingMsg: Message = { text: '', type: 'system', time: this.currentTime(), isStreaming: true };
+    this.messages.push(streamingMsg);
+    const streamingIndex = this.messages.length - 1;
+
+    this.isStreaming = true;
+    this.scrollToBottom();
+
+    try {
+      const reader = await this.webService.streamConversation(messageToSend);
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const payload = line.slice(6);
+          if (payload === '[DONE]') {
+            this.zone.run(() => {
+              this.messages[streamingIndex].isStreaming = false;
+              this.isStreaming = false;
+              this.saveMessagesToStorage();
+            });
+          } else {
+            try {
+              const { delta } = JSON.parse(payload);
+              if (delta) {
+                this.zone.run(() => {
+                  this.messages[streamingIndex].text += delta;
+                  this.scrollToBottom();
+                });
+              }
+            } catch {}
+          }
+        }
+      }
+    } catch {
+      this.zone.run(() => {
+        this.messages.splice(streamingIndex, 1);
+        this.isStreaming = false;
+        this.snackBar.open('Failed to get a response. Please try again.', 'OK', { duration: 3000 });
+      });
+      return;
+    }
+
+    // After AI response: update health score, user info, and image
+    this.webService.getHealthScoreApi().subscribe({
+      next: (res) => {
+        const score = res.data?.healthScore;
+        if (typeof score === 'number') {
+          this.healthScore = score;
+          this.scoreHistory.push(score);
+        }
+        this.webService.getUserInfo().subscribe({
+          next: (infoRes) => {
+            this.processUserInfo(infoRes?.data);
+            this.fetchUserImage();
+          },
+          error: () => {},
+        });
+      },
+      error: () => {},
+    });
+  }
+
+  resetChat() {
+    this.webService.resetConversation().subscribe({
+      next: () => {
+        this.messages = [{ ...INITIAL_WELCOME, time: this.currentTime() }];
+        this.healthScore = 100;
+        this.scoreHistory = [];
+        this.userInfos = {};
+        this.userKeys = [];
+        this.userValues = [];
+        this.userImage = '../../../assets/images/user_customer_person.png';
+        this.imageVisible = false;
+        this.imageDescription = undefined;
+        this.generateImageCounter = 0;
+        this.clearMessagesFromStorage();
+      },
+      error: () => {
+        this.snackBar.open('Could not reset the conversation.', 'OK', { duration: 3000 });
+      },
+    });
+  }
+
+  logout() {
+    localStorage.removeItem('sessionId');
+    this.clearMessagesFromStorage();
+    this.router.navigate(['/']);
+  }
+
   onImageLoad() {
-    console.log('loaded img');
-    console.log(this.userImage);
     this.isLoadingImage = false;
     this.imageVisible = true;
   }
-  adjustTextareas() {
-    this.resizeTextareas = false;
-    this.messages.forEach((message, index) => {
-      this.textareaAdjustment(message.type, index);
-    });
-    this.scrollToLastMessage();
-  }
 
-  adjustTextareaHeight(event: Event) {
-    const textarea = event.target as HTMLTextAreaElement;
-    textarea.style.height = 'auto';
-    textarea.style.height = `${textarea.scrollHeight}px`;
-    console.log(textarea.style.height);
-  }
   processUserInfo(userInfoCalculated: any) {
+    if (!userInfoCalculated) return;
     this.userInfos = userInfoCalculated;
     this.userKeys = Object.keys(userInfoCalculated);
     this.userValues = Object.values(userInfoCalculated);
   }
-  textareaAdjustment(messageType: string, index: number) {
-    const textareaId = `${messageType}${index}`;
-    const textarea = document.getElementById(
-      textareaId
-    ) as HTMLTextAreaElement | null;
-    if (textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight + 10}px`;
-    }
-  }
-  scrollToLastMessage() {
-    console.log('change');
-    this.shouldScroll = false;
-    let lastMessagePosition = this.messages.length - 1;
-    let role = this.messages[lastMessagePosition].type;
-    let lastMessageId = role + lastMessagePosition;
-    const textarea = document.getElementById(
-      lastMessageId
-    ) as HTMLTextAreaElement | null;
-    if (textarea) {
-      textarea?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
+
   fetchUserImage() {
-    if (this.generateImageCounter % 2 == 1) {
+    if (this.generateImageCounter % 2 === 1) {
       this.generateImageCounter++;
       return;
     }
     this.isLoadingImage = true;
     this.imageVisible = false;
-    this._webService.getGeneratedUserImage().subscribe({
-      next: (response) => {
-        console.log(response);
-        this.userImage = response.data.image_url;
-        this.imageDescription = response.data.description;
+    this.webService.getGeneratedUserImage().subscribe({
+      next: (res) => {
+        this.userImage = res.data.image_url;
+        this.imageDescription = res.data.description;
         this.generateImageCounter++;
       },
-      error: (err) => {
+      error: () => {
         this.isLoadingImage = false;
       },
     });
   }
-  sendMessage() {
-    console.log('Send form conversation');
-    let messageToSend = this.newMessage;
-    if (this.newMessage.trim() !== '') {
-      this.messages.push({ text: `${this.newMessage}`, type: 'user' });
-      this.newMessage = '';
-    }
-    //scroll + size reset for user input box
-    this.shouldScroll = true;
-    this.resizeTextareas = true;
-    //chain of calls conversation functions + image generation
-    this.isLoading = true;
-    console.log(this.messages[this.messages.length - 1].type);
 
-    this._webService.postConversazioneApi(messageToSend).subscribe({
-      next: (response) => {
-        console.log(response);
-        this._webService.getConversazioneApi().subscribe({
-          next: (response) => {
-            console.log(response);
-            let maxLengthConversation = response?.conversation.length - 1;
-            let messaggioAssistente =
-              response?.conversation[maxLengthConversation].content;
-            console.log(`lunghezza conversazione ${maxLengthConversation}`);
-            console.log(response?.conversation[maxLengthConversation].content);
-            this.messages.push({
-              text: `${messaggioAssistente}`,
-              type: 'system',
-            });
-            //activates the flag that allows for textarea resizing after messages array update
-            this.resizeTextareas = true;
-            console.log('system' + (this.messages.length - 1));
-            console.log(this.messages);
-            this._webService.getHealthScoreApi().subscribe({
-              next: (response) => {
-                console.log('health score');
-                console.log(response);
-                this.healthScore = response.data.healthScore;
-                this._webService.getUserInfo().subscribe({
-                  next: (response) => {
-                    console.log('user info obj');
-                    console.log(response);
-                    this.processUserInfo(response?.data);
-                    this.fetchUserImage();
-                  },
-                });
-              },
-            });
-          },
-        });
-      },
-      complete: () => {
-        this.isLoading = false;
-      },
-    });
+  scrollToBottom() {
+    setTimeout(() => {
+      if (this.chatBoxRef?.nativeElement) {
+        this.chatBoxRef.nativeElement.scrollTop = this.chatBoxRef.nativeElement.scrollHeight;
+      }
+    }, 0);
   }
+
   openImageModal(): void {
     this.dialog.open(ImageModalComponent, {
-      data: {
-        imageSrc: this.userImage,
-        description: this.imageDescription,
-      },
-      height: '500px', // Set the height to 70% of the viewport height
-      width: '500px', // Adjust the width based on the image or content
-      maxWidth: '80vw', // Optionally set a max-width to control the width
+      data: { imageSrc: this.userImage, description: this.imageDescription },
+      height: '500px',
+      width: '500px',
+      maxWidth: '90vw',
     });
   }
+
   openUserInfoModal(): void {
     if (this.userKeys.length > 0) {
       this.dialog.open(UserInfoModalComponent, {
-        data: {
-          userKeys: this.userKeys,
-          userValues: this.userValues,
-        },
+        data: { userKeys: this.userKeys, userValues: this.userValues },
       });
     } else {
-      this.snackBar.open(
-        "Non ci sono informazioni disponibili per l'utente.",
-        'OK',
-        {
-          duration: 3000, // Durata del messaggio
-        }
-      );
+      this.snackBar.open('No user information collected yet. Start chatting!', 'OK', { duration: 3000 });
     }
   }
-  //makes the keys more readable for the user
-  parseKey(key:string):string{
-    return this.dataService.transformKeyString(key); 
 
+  parseKey(key: string): string {
+    return this.dataService.transformKeyString(key);
+  }
+
+  private storageKey(): string {
+    const sessionId = localStorage.getItem('sessionId') ?? 'default';
+    return STORAGE_KEY_PREFIX + sessionId;
+  }
+
+  private saveMessagesToStorage() {
+    const toSave = this.messages.map((m) => ({ ...m, isStreaming: false }));
+    localStorage.setItem(this.storageKey(), JSON.stringify(toSave));
+  }
+
+  private loadMessagesFromStorage() {
+    try {
+      const raw = localStorage.getItem(this.storageKey());
+      if (raw) this.messages = JSON.parse(raw);
+    } catch {}
+  }
+
+  onEnterKey(event: Event) {
+    const ke = event as KeyboardEvent;
+    if (!ke.shiftKey) {
+      ke.preventDefault();
+      this.sendMessage();
+    }
+  }
+
+  private clearMessagesFromStorage() {
+    localStorage.removeItem(this.storageKey());
   }
 }

@@ -1,73 +1,75 @@
-<div class="outer-container">
-  <div class="container">
-    <div class="inner-container">
-      <div class="main-content">
-        <div class="row g-0 w-100 h-100">
-          <div
-            class="col-md-6 image-section d-flex justify-content-center align-items-center"
-          >
-            <img
-              src="https://st3.depositphotos.com/13349494/17896/i/450/depositphotos_178964966-stock-photo-stethoscope-paper-cardiogram-scattered-pills.jpg"
-              class="img-fluid"
-              alt="Sample image"
-            />
-          </div>
-          <div
-            class="col-md-6 form-section d-flex justify-content-center align-items-center"
-          >
-            <form class="w-100">
-              <div class="form-outline mb-4">
-                <input
-                  type="email"
-                  id="form3Example3"
-                  class="form-control form-control-lg"
-                  placeholder="Enter a valid email address"
-                  required
-                />
-                <label class="form-label" for="form3Example3"
-                  >Email address</label
-                >
-              </div>
+<div class="login-card">
 
-              <div class="form-outline mb-3">
-                <input
-                  type="password"
-                  id="form3Example4"
-                  class="form-control form-control-lg"
-                  placeholder="Enter password"
-                  required
-                />
-                <label class="form-label" for="form3Example4">Password</label>
-              </div>
-
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="form-check mb-0">
-                  <input
-                    class="form-check-input me-2"
-                    type="checkbox"
-                    value=""
-                    id="form2Example3"
-                  />
-                  <label class="form-check-label" for="form2Example3">
-                    Remember me
-                  </label>
-                </div>
-                <a href="#!" class="text-body">Forgot password?</a>
-              </div>
-
-              <div class="text-center text-lg-start mt-4 pt-2">
-                <button type="submit" (click)="validateAndRoute()" class="btn btn-primary btn-lg">
-                  Login
-                </button>
-                <p class="small fw-bold mt-2 pt-1 mb-0">
-                  Don't have an account?
-                  <a href="#!" class="link-danger">Register</a>
-                </p>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+  <!-- Left: image panel -->
+  <div class="image-panel">
+    <div class="image-overlay">
+      <img src="../../../assets/images/pixel-heart-heart.png" alt="AiPocondria" class="brand-icon" />
+      <h2 class="brand-name">AiPocondria</h2>
+      <p class="brand-tagline">Your personal AI health companion</p>
     </div>
+  </div>
+
+  <!-- Right: form panel -->
+  <div class="form-panel">
+
+    <!-- Tab switcher -->
+    <div class="tab-row">
+      <button class="tab-btn" [class.active]="mode === 'login'" (click)="setMode('login')">Sign In</button>
+      <button class="tab-btn" [class.active]="mode === 'register'" (click)="setMode('register')">Create Account</button>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage" class="error-banner">{{ errorMessage }}</div>
+
+    <!-- Sign In form -->
+    <form *ngIf="mode === 'login'" (ngSubmit)="login()" class="auth-form">
+      <div class="field">
+        <label for="emailInput">Email address</label>
+        <input type="email" id="emailInput" placeholder="you@example.com"
+          [(ngModel)]="email" name="email" required autocomplete="email" />
+      </div>
+      <div class="field">
+        <label for="passwordInput">Password</label>
+        <input type="password" id="passwordInput" placeholder="Your password"
+          [(ngModel)]="password" name="password" required autocomplete="current-password" />
+      </div>
+      <button type="submit" class="submit-btn" [disabled]="isLoading">
+        {{ isLoading ? 'Signing in…' : 'Sign In' }}
+      </button>
+    </form>
+
+    <!-- Create Account form -->
+    <form *ngIf="mode === 'register'" (ngSubmit)="register()" class="auth-form">
+      <div class="field">
+        <label for="nameInput">Full name</label>
+        <input type="text" id="nameInput" placeholder="Jane Doe"
+          [(ngModel)]="name" name="name" required autocomplete="name" />
+      </div>
+      <div class="field">
+        <label for="regEmailInput">Email address</label>
+        <input type="email" id="regEmailInput" placeholder="you@example.com"
+          [(ngModel)]="regEmail" name="regEmail" required autocomplete="email" />
+      </div>
+      <div class="field">
+        <label for="regPasswordInput">Password <span class="hint">(min. 6 characters)</span></label>
+        <input type="password" id="regPasswordInput" placeholder="Choose a password"
+          [(ngModel)]="regPassword" name="regPassword" required autocomplete="new-password" />
+      </div>
+      <div class="field">
+        <label for="confirmPasswordInput">Confirm password</label>
+        <input type="password" id="confirmPasswordInput" placeholder="Repeat password"
+          [(ngModel)]="confirmPassword" name="confirmPassword" required autocomplete="new-password" />
+      </div>
+      <button type="submit" class="submit-btn" [disabled]="isLoading">
+        {{ isLoading ? 'Creating account…' : 'Create Account' }}
+      </button>
+    </form>
+
+    <!-- Demo hint -->
+    <p class="demo-hint">🔓 Demo mode — any valid-format credentials work for this portfolio app</p>
+
+    <!-- Back link -->
+    <p class="back-link"><a href="#" (click)="goBack($event)">← Back to home</a></p>
+
   </div>
 </div>
