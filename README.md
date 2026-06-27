@@ -4,6 +4,8 @@ An AI-powered web app that playfully embraces hypochondria — users chat with a
 
 **Live demo:** https://aipocondriaco.onrender.com
 
+![AiPocondria intro screen](docs/screenshot.png)
+
 ---
 
 ## What it does
