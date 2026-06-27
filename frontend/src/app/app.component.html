@@ -1,3 +1,31 @@
-<section class="container" [@routeAnimations]="prepareRoute(outlet)">
-    <router-outlet #outlet="outlet"></router-outlet>
-</section>
+<div class="monitor">
+
+  <div class="monitor-body">
+    <div class="monitor-screen">
+
+      <!-- macOS-style window chrome -->
+      <div class="window-chrome">
+        <div class="traffic-lights">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <span class="window-title">AiPocondria</span>
+        <div class="chrome-spacer"></div>
+      </div>
+
+      <!-- Routed content -->
+      <section class="container" [@routeAnimations]="prepareRoute(outlet)">
+        <router-outlet #outlet="outlet"></router-outlet>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Stand -->
+  <div class="monitor-stand">
+    <div class="monitor-neck"></div>
+    <div class="monitor-foot"></div>
+  </div>
+
+</div>
