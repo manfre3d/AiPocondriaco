@@ -1,7 +1,6 @@
 // constants.js
-// const OPENAI_MODEL_TEXT_GENERATION = "gpt-3.5-turbo";
-const OPENAI_MODEL_TEXT_GENERATION = "gpt-4o";
-const OPENAI_MODEL_IMAGE_GENERATION = "dall-e-3";
+const GEMINI_MODEL_TEXT = "gemini-2.0-flash";
+const GEMINI_MODEL_IMAGE = "gemini-2.0-flash-exp-image-generation";
 
 const INITIAL_MESSAGE = {
   role: "user",
@@ -74,8 +73,8 @@ const IMAGE_GENERATION_PROMPT = `based on the current conversation give me a par
             `;
 
 module.exports = {
-  OPENAI_MODEL_TEXT_GENERATION,
-  OPENAI_MODEL_IMAGE_GENERATION,
+  GEMINI_MODEL_TEXT,
+  GEMINI_MODEL_IMAGE,
   IMAGE_GENERATION_PROMPT,
   INITIAL_MESSAGE,
   HEALTH_SCORE_MESSAGE,

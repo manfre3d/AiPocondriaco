@@ -1,22 +1,19 @@
 const express = require("express");
 const cors = require('cors');
 require("dotenv").config();
-const { OpenAI } = require("openai");
-const app = express()
-// import OpenAI from "openai";
-
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const app = express();
 
 app.use(logger);
 app.use(express.json());
 app.use(cors());
 
-
-// Export real OpenAI client when API key is present, null otherwise (demo mode)
-if (!process.env.OPENAI_API_KEY) {
-    console.warn("⚠️  OPENAI_API_KEY not set — running in demo mode with scripted responses.");
+// Export Gemini client when API key is present, null otherwise (demo mode)
+if (!process.env.GEMINI_API_KEY) {
+    console.warn("⚠️  GEMINI_API_KEY not set — running in demo mode with scripted responses.");
     module.exports = null;
 } else {
-    module.exports = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    module.exports = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 }
 //basic route
 app.get("/", async (req, res) => {
@@ -71,6 +68,6 @@ function logger(req, res, next) {
 // server listening start
 app.listen(port, () => {
     // console.log(openai)
-    const mode = process.env.OPENAI_API_KEY ? "live" : "demo";
+    const mode = process.env.GEMINI_API_KEY ? "live" : "demo";
     console.log(`Server listening on port ${port} [${mode} mode]`);
 });
