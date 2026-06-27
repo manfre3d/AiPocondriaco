@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require('cors');
+const path = require('path');
 require("dotenv").config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const app = express();
@@ -15,18 +16,6 @@ if (!process.env.GEMINI_API_KEY) {
 } else {
     module.exports = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 }
-//basic route
-app.get("/", async (req, res) => {
-
-    try {
-        return res.status(200).json({ message: "server working" });
-
-    } catch (error) {
-        console.log(error);
-    }
-
-});
-
 //-------------------------------------------------------
 //server port 
 //todo add .env Port variable
@@ -56,6 +45,13 @@ app.use("/patologie", patologieRouter)
 app.use("/attivitaFisiche", attivitaFisiche)
 
 app.use("/auth", authRouter)
+
+// Serve Angular build and fall back to index.html for client-side routing
+const angularDist = path.join(__dirname, '../frontend/dist/frontend/browser');
+app.use(express.static(angularDist));
+app.get('*', (req, res) => {
+    res.sendFile(path.join(angularDist, 'index.html'));
+});
 
 //-------------------------------------------------------
 /*basic logger that shows the url being called on the server*/
