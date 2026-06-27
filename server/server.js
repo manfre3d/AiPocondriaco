@@ -11,18 +11,13 @@ app.use(express.json());
 app.use(cors());
 
 
-//check if a .env file is properly configured and a apikey is correctly configured
+// Export real OpenAI client when API key is present, null otherwise (demo mode)
 if (!process.env.OPENAI_API_KEY) {
-    console.error("OPENAI_API_KEY is not set. Check your .env file.");
-    process.exit(1); // Exit the application if the API key is not set
+    console.warn("⚠️  OPENAI_API_KEY not set — running in demo mode with scripted responses.");
+    module.exports = null;
+} else {
+    module.exports = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 }
-
-//set openai class configuring the api key in the class 
-const openaiApiConfig = {
-    apiKey: process.env.OPENAI_API_KEY
-}
-// exports the class to be used externally
-module.exports = new OpenAI(openaiApiConfig);
 //basic route
 app.get("/", async (req, res) => {
 
@@ -76,5 +71,6 @@ function logger(req, res, next) {
 // server listening start
 app.listen(port, () => {
     // console.log(openai)
-    console.log(`Server listening on port ${port} ${process.env.OPENAI_API_KEY}`)
+    const mode = process.env.OPENAI_API_KEY ? "live" : "demo";
+    console.log(`Server listening on port ${port} [${mode} mode]`);
 });

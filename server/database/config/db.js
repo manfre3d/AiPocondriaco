@@ -15,7 +15,7 @@ async function connect() {
         
 
     } catch (error) {
-        console.error("Errore di connessione:", error);
+        // Suppress connection errors — DB is not required for demo mode
     }
 }
 
@@ -23,7 +23,7 @@ async function disconnect(client) {
     try {
         await client.release();
     } catch (error) {
-        console.error("Errore durante la disconnessione:", error);
+        // ignore
     }
 }
 

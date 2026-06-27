@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const openai = require("../server.js");
+const openai = require("../server.js"); // null when OPENAI_API_KEY is not set (demo mode)
 const {
   OPENAI_MODEL_TEXT_GENERATION,
   OPENAI_MODEL_IMAGE_GENERATION,
@@ -10,6 +10,13 @@ const {
   USER_DESCRIPTION_MESSAGE,
 } = require("../constants.js");
 const { cleanResponseString, parseAndCleanObject } = require("../utils.js");
+const {
+  DEMO_STREAM_RESPONSES,
+  DEMO_USER_INFO,
+  DEMO_HEALTH_SCORES,
+  DEMO_IMAGE_URL,
+  streamText,
+} = require("../mock/demo.js");
 
 // Per-session state: sessionId → { conversation, userInfo, tmpImageParagraph }
 const sessions = new Map();
@@ -68,6 +75,17 @@ router.post("/stream", async (req, res) => {
   res.setHeader("Connection", "keep-alive");
   res.flushHeaders();
 
+  if (!openai) {
+    // Demo mode: stream a scripted response
+    const exchangeIndex = Math.max(0, Math.floor((session.conversation.length - 2) / 2));
+    const text = DEMO_STREAM_RESPONSES[Math.min(exchangeIndex, DEMO_STREAM_RESPONSES.length - 1)];
+    await streamText(res, text);
+    session.conversation.push({ role: "assistant", content: text });
+    res.write("data: [DONE]\n\n");
+    res.end();
+    return;
+  }
+
   try {
     const stream = await openai.chat.completions.create({
       messages: session.conversation,
@@ -105,8 +123,15 @@ router.delete("/conversation", (req, res) => {
 });
 
 router.get("/healthScore", async (req, res) => {
+  const session = getSession(getSessionId(req));
+
+  if (!openai) {
+    const exchangeIndex = Math.max(0, Math.floor((session.conversation.length - 2) / 2));
+    const score = DEMO_HEALTH_SCORES[Math.min(exchangeIndex, DEMO_HEALTH_SCORES.length - 1)];
+    return res.status(200).json({ success: true, data: { healthScore: score } });
+  }
+
   try {
-    const session = getSession(getSessionId(req));
     const tmpConversation = structuredClone(session.conversation);
     tmpConversation.push({ role: "user", content: HEALTH_SCORE_MESSAGE });
 
@@ -124,8 +149,14 @@ router.get("/healthScore", async (req, res) => {
 });
 
 router.get("/userInfo", async (req, res) => {
+  const session = getSession(getSessionId(req));
+
+  if (!openai) {
+    session.userInfo = DEMO_USER_INFO;
+    return res.status(200).json({ success: true, data: DEMO_USER_INFO });
+  }
+
   try {
-    const session = getSession(getSessionId(req));
     const tmpConversation = structuredClone(session.conversation);
     tmpConversation.push({
       role: "user",
@@ -156,8 +187,16 @@ router.get("/userInfo", async (req, res) => {
 });
 
 router.get("/generateImage", async (req, res) => {
+  const session = getSession(getSessionId(req));
+
+  if (!openai) {
+    return res.status(200).json({
+      success: true,
+      data: { image_url: DEMO_IMAGE_URL, description: "Demo avatar — connect an OpenAI API key to generate a personalised AI avatar." },
+    });
+  }
+
   try {
-    const session = getSession(getSessionId(req));
     const tmpConversation = structuredClone(session.conversation);
     tmpConversation.push({
       role: "user",
